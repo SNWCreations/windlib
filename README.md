@@ -8,15 +8,20 @@ If you have any questions, please give me feedback in issues.
 
 But I may not reply in time, please forgive me.
 
+#### English / [简体中文](https://github.com/SNWCreations/windlib/blob/main/README-zh_Hans.md)
+
 ---
 
 ## **Usage**
+
+***Tip: If you use the "import windlib" method to import my function, then the function name in the example below should be changed to "windlib.\<function name\>"
+If you use the "from windlib import \<function name\>" method, the "windlib" prefix is not required.***
 
 ### **typeof - Detect the type of a variable.**
 
     For example, I define a variable "a" as 10 (this is an integer number, that is, "int") and call this function with the following method:
 
-    windlib.typeof(a)
+    typeof(a)
 
     This function returns the string 'int'.
 
@@ -93,7 +98,7 @@ If the "slient" parameter is False, a prompt will be generated when the function
 
 Get the drive letter of the partition where the system is located.
 
-Will return a variable "os_partition".
+Will return a variable "os_partition". (The content may be any letter from A-Z)
 
 ---
 
