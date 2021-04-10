@@ -18,9 +18,9 @@ setuptools.setup(
     },
     python_requires=">=3.6",
     install_requires=[
-        "zipfile",
-        "pathlib",
-        "clint"
+        'zipfile',
+        'pathlib',
+        'clint'
     ],
     classifiers=[
         "Programming Language :: Python :: 3",
