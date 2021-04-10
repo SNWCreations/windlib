@@ -7,7 +7,7 @@
 #   Oh, I wrote this library just to facilitate my writing of some private scripts.
 #   Don't be angry because my "Chinglish" ...
 #
-#   Version 1.3.0 (2021/4/10)
+#   Version 1.4.0 (2021/4/10)
 #
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
 #
@@ -15,9 +15,8 @@
 #   Functions:
 #       typeof (added in v1.1.0)
 #       check_os
-#       unzip
+#       extract (added in v1.4.0, replace the "unzip" function)
 #       get_file
-#       get_large_file
 #       find_file_on_all_partitions
 #       get_os_partition
 #       file_exists (added in v1.1.0)
@@ -27,9 +26,32 @@
 #
 #
 
-name = 'windlib'
 
-#The library description...
+# import libraries for functions
+from clint.textui import progress
+from pathlib import Path
+import rarfile
+import tarfile
+import gzip
+import requests
+import urllib
+import platform
+import zipfile
+import sys
+import os
+
+
+# some variables for functions.
+disklst = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+found_letters = []
+
+
+name = 'windlib'
+version = '1.4.0'
+
+
+
+# The library description...
 
 """
 Windlib by SNWCreations
@@ -43,24 +65,9 @@ I'm so lazy...
 (C) 2021 SNWCreations. All rights reserved.
 """
 
-
-print('Windlib by SNWCreations')
-print('(C) 2021 SNWCreations. All rights reserved.')
-
-
-#import libraries for functions
-import os
-import sys
-import zipfile
-import platform
-import urllib
-import requests
-from pathlib import Path
-from clint.textui import progress
-
-#some variables for functions.
-disklst = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X','Y','Z']
-found_letters = []
+# the copyright message
+print('Windlib', version, 'by SNWCreations')
+print('Copyright (C) 2021 SNWCreations. All rights reserved.')
 
 
 
@@ -68,20 +75,20 @@ def typeof(variate):
     """
     Detect the type of a variable.
     """
-    var_type=None
-    if isinstance(variate,int):
+    var_type = None
+    if isinstance(variate, int):
         var_type = 'int'
-    elif isinstance(variate,str):
+    elif isinstance(variate, str):
         var_type = 'str'
-    elif isinstance(variate,float):
+    elif isinstance(variate, float):
         var_type = 'float'
-    elif isinstance(variate,list):
+    elif isinstance(variate, list):
         var_type = 'list'
-    elif isinstance(variate,tuple):
+    elif isinstance(variate, tuple):
         var_type = 'tuple'
-    elif isinstance(variate,dict):
+    elif isinstance(variate, dict):
         var_type = 'dict'
-    elif isinstance(variate,set):
+    elif isinstance(variate, set):
         var_type = 'set'
     return var_type
 
@@ -108,7 +115,7 @@ def check_os(wantedOSName, slient=True, auto_exit=False):
     The default value is True. The valid values are True or False.
 
     * auto_exit - If the obtained system type is not what you want, it will decide whether to terminate the process according to this variable.
-    
+
     If the process is terminated, an error value of "1" will be returned.
 
     The default value is False. The valid values are True or False.
@@ -125,7 +132,7 @@ def check_os(wantedOSName, slient=True, auto_exit=False):
             else:
                 if not slient == True:
                     print('It\'s desired opearting system.')
-        #Oh! The f**king pylint!!!!!
+        # Oh! The f**king pylint!!!!!
         if not sys.platform() in wantedOSName:
             if not slient == True:
                 print('Not the desired operating system.')
@@ -152,8 +159,6 @@ def check_os(wantedOSName, slient=True, auto_exit=False):
         else:
             if not slient == True:
                 print('It\'s desired opearting system.')
-            
-
 
 
 def os_info(slient=True):
@@ -170,7 +175,9 @@ def os_info(slient=True):
         os_vers = os_version_tmp.split('-')
         os_edition = str(platform.win32_edition())
         os_arch = platform.architecture()
-        os_version = 'Microsoft' + os_vers[0] + ' ' + os_vers[1] + ' ' + os_edition + ' ' + os_vers[2] + ' ' + os_arch[0]
+        os_version = 'Microsoft' + \
+            os_vers[0] + ' ' + os_vers[1] + ' ' + \
+            os_edition + ' ' + os_vers[2] + ' ' + os_arch[0]
     elif sys.platform == 'darwin':
         os_version_tmp = platform.platform()
         os_version = os_version_tmp.replace('-', ' ')
@@ -187,82 +194,84 @@ def os_info(slient=True):
 
 
 
-def unzip(filename):
-    """unzip zip file"""
+def extract(filename):
+    """
+    Unzip the compressed files.
 
-    zip_file = zipfile.ZipFile(filename)
-    if os.path.isdir(filename + "_files"):
-        pass
-    else:
-        os.mkdir(filename + "_files")
-    for names in zip_file.namelist():
-        zip_file.extract(names,filename + "_files/")
-    zip_file.close()
+    The "rarfile" library is required for support the rar files.
+
+    You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
+    """
+    if filename.endswith('.zip'):
+        zip_file = zipfile.ZipFile(filename)
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
+        for names in zip_file.namelist():
+            zip_file.extract(names, filename + "_files/")
+        zip_file.close()
+    elif filename.endswith('.gz'):
+        f_name = filename.replace(".gz", "")
+        # 获取文件的名称，去掉
+        g_file = gzip.GzipFile(filename)
+        # 创建gzip对象
+        open(f_name, "w+").write(g_file.read())
+        # gzip对象用read()打开后，写入open()建立的文件里。
+        g_file.close()
+        # 关闭gzip对象
+    elif filename.endswith('.tar'):
+        tar = tarfile.open(filename)
+        names = tar.getnames()
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
+        # 因为解压后是很多文件，预先建立同名目录
+        for name in names:
+            tar.extract(name, filename + "_files/")
+        tar.close()
+    elif filename.endswith('.rar'):
+        rar = rarfile.RarFile(filename)
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
+        os.chdir(filename + "_files"):
+            rar.extractall()
+        rar.close()
 
 
 
-def get_file(url, save_path='.', slient=True):
+def get_file(url, save_path='.', show_progress=False, slient=True):
     """
     Download a file from the Internet.
 
-    But please note that the target file cannot be too large, otherwise there will be no response for a long time.
-
-    If you want to download a large file, please use the "get_large_file" function.
+    If the "show_progress" parameter is True, progress will be displayed when downloading. The default value of this parameter is False.
 
     If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
-    filename = os.path.basename(url)
-    save_name = save_path + '/' + filename
-    if not slient == True:
-        print('Downloading', save_name)
-    file = urllib.request.urlopen(url)
-    data = file.read()
-    with open(save_name, "wb") as f:
-        f.write(data)
-
-
-
-def get_file_with_progress(url):
-    """
-    Download a file from the Internet.
-
-    You can display progress while downloading.
-    """
-    res = requests.get(url, stream=True)
-    total_length = int(res.headers.get('content-length'))
-    filename = os.path.basename(url)
-    with open(filename, "wb") as pypkg:
-        for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=100):
+    if show_progress == False:
+        filename = os.path.basename(url)
+        save_name = save_path + '/' + filename
+        if not slient == True:
+            print('Downloading', save_name)
+        r = requests.get(url, stream=True)
+        f = open(save_name, "wb")
+        # chunk是指定每次写入的大小，每次只写了1024byte
+        for chunk in r.iter_content(chunk_size=1024):
             if chunk:
-                pypkg.write(chunk)
-
-
-
-def get_large_file(url, save_path='.', slient=True):
-    """
-    This function is specifically for downloading large files.
-
-    Filename refers to the local name of the file you want to save.
-
-    For example, If you want to download "www.example.net/example.zip", then the local name should be "example.zip".
-
-    Of course, the filename may not be consistent with the filename provided by the url.
-
-    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
-    """
-
-    filename = os.path.basename(url)
-    save_name = save_path + '/' + filename
-    if not slient == True:
-        print('Downloading', save_name)
-    r = requests.get(url, stream=True)
-    f = open(save_name, "wb")
-    # chunk是指定每次写入的大小，每次只写了1024byte
-    for chunk in r.iter_content(chunk_size=1024):
-        if chunk:
-            f.write(chunk)
-    if not slient == True:
-        print('Completed.')
+                f.write(chunk)
+        if not slient == True:
+            print('Completed.')
+    else:
+        res = requests.get(url, stream=True)
+        total_length = int(res.headers.get('content-length'))
+        filename = os.path.basename(url)
+        with open(filename, "wb") as pypkg:
+            for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=100):
+                if chunk:
+                    pypkg.write(chunk)
 
 
 
@@ -302,32 +311,27 @@ def find_file_on_all_partitions(filename, slient=True):
         if not found_letters == []:
             if not slient == True:
                 print('Done!')
-                print('The target file was found in the partition with these drive letters:', found_letters)
+                print(
+                    'The target file was found in the partition with these drive letters:', found_letters)
         else:
             if not slient == True:
                 print('Done!')
                 print('The target file was not found!')
     del now
     del now_file
-    
 
 
-
-def get_os_partition(slient=True):
+def get_os_partition():
     """
     Get the drive letter of the partition where the system is located.
 
-    Will return a variable "os_partition"
-
-    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+    Will return a variable "os_partition".
     """
 
     os_partition_tmp = os.getenv("SystemDrive")
     os_partition = os_partition_tmp.replace(':', '')
-    if not slient == True:
-        print('The SystemDrive is', os_partition)
     del os_partition_tmp
-
+    return os_partition
 
 
 def file_exists(filename, auto_exit=False, slient=True):
@@ -352,17 +356,18 @@ def file_exists(filename, auto_exit=False, slient=True):
         sys.exit(1)
 
 
-
-def find_files_with_the_specified_extension(file_type, folder, slient=True):
+def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
     """
     Find the file with the specified extension name in targeted folder, and add the file name to the "file_list" list.
+
+    The default value of parameter "folder" is '.' (Current dir).
 
     The "file_type" variable must be an extension, and does not need to carry ".".
 
     For example "txt" "jar" "md" "class"
 
     Cannot be ".txt" ".jar" ".md" ".class"
-    
+
     If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     f_type = '.' + file_type
@@ -374,11 +379,12 @@ def find_files_with_the_specified_extension(file_type, folder, slient=True):
     del items
 
 
-
 def find_str_in_file(string, filename, slient=True):
     """
     Find target string in a file.
-    
+
+    "filename" parameter must be a valid file name (can be absolute or relative path).
+
     If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     with open(filename, 'r') as f:
@@ -387,7 +393,4 @@ def find_str_in_file(string, filename, slient=True):
             time = line.count(string)
             counts += time
         if not slient == False:
-            print("%s出现的次数：%d"%(str,counts))
-
-
-
+            print("%sNumber of occurrences：%d" % (str, counts))
