@@ -8,6 +8,7 @@ If you have any questions, please give me feedback in issues.
 
 But I may not reply in time, please forgive me.
 
+---
 
 ## **Usage**
 
@@ -15,9 +16,9 @@ But I may not reply in time, please forgive me.
 
     For example, I define a variable "a" as 10 (this is an integer number, that is, "int") and call this function with the following method:
 
-    windlib.typeof (a)
+    windlib.typeof(a)
 
-    This function returns the string 'Int'.
+    This function returns the string 'int'.
 
 ---
 
@@ -44,8 +45,6 @@ slient - executes without generating any information.
 
 The default value is True. The valid values are True or False.
 
----
-
 auto_exit - If the obtained system type is not what you want,it will decide whether to terminate the process according to this variable.
 
 If the process is terminated, an error value of "1" will be returned.
@@ -56,7 +55,7 @@ The default value is False. The valid values are True or False.
 
 ### **os_info - Get the OS information.**
 
-Get detailed information about the system, excluding information about computer accessories.
+Get detailed information about the system, **excluding information about computer accessories.**
 
 The full information will saved as variable "os_version".
 
