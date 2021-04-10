@@ -12,13 +12,11 @@ But I may not reply in time, please forgive me.
 
 ## **Usage**
 
-***Tip: If you use the "import windlib" method to import my function, then the function name in the example below should be changed to "windlib.\<function name\>"
-If you use the "from windlib import \<function name\>" method, the "windlib" prefix is not required.***
 ### **typeof - Detect the type of a variable.**
 
     For example, I define a variable "a" as 10 (this is an integer number, that is, "int") and call this function with the following method:
 
-    typeof(a)
+    windlib.typeof(a)
 
     This function returns the string 'int'.
 
