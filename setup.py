@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="windlib",
-    version="1.4.0",
+    version="1.4.1",
     author="SNWCreations",
     author_email="windcheng233@gmail.com",
     description="A useful functions library for everyone.",

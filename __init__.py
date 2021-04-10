@@ -194,13 +194,15 @@ def os_info(slient=True):
 
 
 
-def extract(filename):
+def extract(filename, slient=True):
     """
     Unzip the compressed files.
 
     The "rarfile" library is required for support the rar files.
 
     You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
+    
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     if filename.endswith('.zip'):
         zip_file = zipfile.ZipFile(filename)
@@ -237,9 +239,15 @@ def extract(filename):
             pass
         else:
             os.mkdir(filename + "_files")
-        os.chdir(filename + "_files"):
-            rar.extractall()
+        os.chdir(filename + "_files")
+        rar.extractall()
         rar.close()
+    else:
+        if not slient == False:
+            print('Error! Invaild file.')
+    if not slient == False:
+        print('Done!')
+
 
 
 

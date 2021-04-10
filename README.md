@@ -76,6 +76,8 @@ The "rarfile" library is required for support the rar files.
 
 You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
 
+If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+
 ---
 
 ### **get_file - Download a file from Internet.**
