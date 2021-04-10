@@ -2,7 +2,11 @@
 
 ---
 
-**v1.4.1 (Current version)**
+**v1.4.2 (Current version)**
+
+Repair the serious problem of the installation script.
+
+**v1.4.1**
 
 Optimize the "extract" function.
 

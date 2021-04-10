@@ -5,7 +5,7 @@ with open("README.md", "r") as fh:
 
 setuptools.setup(
     name="windlib",
-    version="1.4.1",
+    version="1.4.2",
     author="SNWCreations",
     author_email="windcheng233@gmail.com",
     description="A useful functions library for everyone.",
@@ -17,11 +17,6 @@ setuptools.setup(
         "Bug Tracker": "https://github.com/SNWCreations/windlib/issues",
     },
     python_requires=">=3.6",
-    install_requires=[
-        'zipfile',
-        'pathlib',
-        'clint'
-    ],
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",

@@ -7,7 +7,7 @@
 #   Oh, I wrote this library just to facilitate my writing of some private scripts.
 #   Don't be angry because my "Chinglish" ...
 #
-#   Version 1.4.0 (2021/4/10)
+#   Version 1.4.2 (2021/4/10)
 #
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
 #
