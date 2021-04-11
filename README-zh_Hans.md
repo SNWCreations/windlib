@@ -71,11 +71,9 @@ auto_exit - 如果获取的系统类型不是您想要的，它将根据该变�
 
 解压缩文件。
 
-支持“.zip”，“.gz”，“.tar”，“.rar”文件。
+支持“.zip”，“.gz”，“.tar”，“.rar”，“.tar.gz”文件。
 
-下一个版本将支持“ .tar.gz”格式。
-
-支持rar文件需要“rarfile”库。
+如果需要支持rar文件，则需要“rarfile”库。
 
 您可以从 https://sourceforge.net/projects/rarfile.berlios/files/latest/download“ 下载 “rarfile” 库。
 

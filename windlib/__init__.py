@@ -7,7 +7,7 @@
 #   Oh, I wrote this library just to facilitate my writing of some private scripts.
 #   Don't be angry because my "Chinglish" ...
 #
-#   Version 1.4.5 (2021/4/11)
+#   Version 1.5.0 (2021/4/11)
 #
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
 #
@@ -42,13 +42,13 @@ import os
 
 
 # some variables for functions.
-disklst = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+disklst = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
+           'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 found_letters = []
 
 
 name = 'windlib'
-version = '1.4.5'
-
+version = '1.5.0'
 
 
 # The library description...
@@ -68,7 +68,6 @@ I'm so lazy...
 # the copyright message
 print('Windlib', version, 'by SNWCreations')
 print('Copyright (C) 2021 SNWCreations. All rights reserved.')
-
 
 
 def typeof(variate):
@@ -91,7 +90,6 @@ def typeof(variate):
     elif isinstance(variate, set):
         var_type = 'set'
     return var_type
-
 
 
 def check_os(wantedOSName, slient=True, auto_exit=False):
@@ -132,8 +130,7 @@ def check_os(wantedOSName, slient=True, auto_exit=False):
             else:
                 if not slient == True:
                     print('It\'s desired opearting system.')
-        # Oh! The f**king pylint!!!!!
-        if not sys.platform() in wantedOSName:
+        if not sys.platform in wantedOSName:
             if not slient == True:
                 print('Not the desired operating system.')
             if not auto_exit == False:
@@ -193,7 +190,6 @@ def os_info(slient=True):
         print(os_version)
 
 
-
 def extract(filename, slient=True):
     """
     Unzip the compressed files.
@@ -201,7 +197,7 @@ def extract(filename, slient=True):
     The "rarfile" library is required for support the rar files.
 
     You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
-    
+
     If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     if filename.endswith('.zip'):
@@ -242,13 +238,15 @@ def extract(filename, slient=True):
         os.chdir(filename + "_files")
         rar.extractall()
         rar.close()
+    elif filename.endswith("tar.gz"):
+        tar = tarfile.open(filename, "r:gz")
+        tar.extractall()
+        tar.close()
     else:
         if not slient == False:
             print('Error! Invaild file.')
     if not slient == False:
         print('Done!')
-
-
 
 
 def get_file(url, save_path='.', show_progress=False, slient=True):
@@ -280,7 +278,6 @@ def get_file(url, save_path='.', show_progress=False, slient=True):
             for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=100):
                 if chunk:
                     pypkg.write(chunk)
-
 
 
 def find_file_on_all_partitions(filename, slient=True):

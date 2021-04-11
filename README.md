@@ -72,11 +72,9 @@ If the "slient" parameter is False, a prompt will be generated when the function
 
 Unzip the compressed files.
 
-Support ".zip" ".gz" ".tar" ".rar" files.
+Support ".zip" ".gz" ".tar" ".rar" ".tar.gz" files.
 
-".tar.gz" format will support in next version.
-
-The "rarfile" library is required for support the rar files.
+The "rarfile" library is required for support the ".rar" files.
 
 You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
 

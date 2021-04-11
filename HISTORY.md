@@ -2,7 +2,13 @@
 
 ---
 
-**v1.4.2 (Current version)**
+**v1.5.0 (Current version)**
+
+The "extract" function support the ".tar.gz" files now!
+
+* *(But this new feature has not been tested!)*
+
+**v1.4.2**
 
 Repair the serious problem of the installation script.
 
