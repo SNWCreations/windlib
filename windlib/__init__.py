@@ -7,7 +7,7 @@
 #   Oh, I wrote this library just to facilitate my writing of some private scripts.
 #   Don't be angry because my "Chinglish" ...
 #
-#   Version 1.4.3 (2021/4/11)
+#   Version 1.4.5 (2021/4/11)
 #
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
 #
@@ -47,7 +47,7 @@ found_letters = []
 
 
 name = 'windlib'
-version = '1.4.3'
+version = '1.4.5'
 
 
 
