@@ -64,7 +64,7 @@ Get detailed information about the system, **excluding information about compute
 
 The full information will saved as variable "os_version".
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
@@ -80,7 +80,7 @@ The "rarfile" library is required for support the rar files.
 
 You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
@@ -90,7 +90,7 @@ Download a file from the Internet.
 
 If the "show_progress" parameter is True, progress will be displayed when downloading. The default value of this parameter is False.
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
@@ -108,7 +108,7 @@ Check if the file exists.
 
 If the "auto_exit" parameter is True, the program will exit when the target file cannot be found.
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
@@ -124,7 +124,7 @@ For example "txt" "jar" "md" "class".
 
 Cannot be ".txt" ".jar" ".md" ".class".
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
@@ -134,7 +134,7 @@ Find target string in a file.
 
 "filename" parameter **must** be a valid file name (can be absolute or relative path).
 
-If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
 ---
 
