@@ -2,7 +2,15 @@
 
 ---
 
-**v1.6.0 (Current version)**
+**v1.6.1 (Current version)**
+
+Added "file_or_dir_exists" function. (replace the "file_exists" function.)
+
+Optimize the functions.
+
+---
+
+**v1.6.0**
 
 Added "copy_file" function.
 
@@ -25,6 +33,8 @@ Repair the serious problem of the installation script.
 **v1.4.1**
 
 Optimize the "extract" function.
+
+Fixed a bug in "copy_file" function.
 
 ---
 
@@ -61,4 +71,3 @@ But I don't think it matters.
 ---
 
 ## Thanks for using windlib!
-## Created by SNWCreations.

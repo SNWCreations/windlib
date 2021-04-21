@@ -100,13 +100,15 @@ Will return a variable "os_partition". (The content may be any letter from A-Z)
 
 ---
 
-### **file_exists - Check if the file exists.**
+### **file_or_dir_exists - Check if the file or directory exists.**
 
-Check if the file exists.
+Check if the file or directory exists.
 
-If the "auto_exit" parameter is True, the program will exit when the target file cannot be found.
+When the target is a file, 'IS_FILE' is returned.
 
-If the "slient" parameter is False, a prompt will be generated when the function finishes.
+When the target is a directory, 'IS_DIR' is returned.
+
+When the function cannot find the target, it returns 'NOT_FOUND'.
 
 ---
 

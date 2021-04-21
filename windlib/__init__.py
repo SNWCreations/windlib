@@ -322,26 +322,28 @@ def get_os_partition():
     return os_partition
 
 
-def file_exists(filename, auto_exit=False, slient=True):
+def file_or_dir_exists(target):
     """
-    Check if the file exists.
+    Check if the file or directory exists.
 
-    If the "auto_exit" parameter is True, the program will exit when the target file cannot be found.
+    When the target is a file, 'IS_FILE' is returned.
 
-    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+    When the target is a directory, 'IS_DIR' is returned.
+
+    When the function cannot find the target, it returns 'NOT_FOUND'.
+
     """
-    file = Path(filename)
-    os.path.isfile(file)
+    try:
+        file = Path(target)
+    except:
+        return 'TARGET_INVAILD'
     if file.is_file():
-        if not slient == True:
-            print('The file exists.')
-        return 0
+        return 'IS_FILE'
+    elif file.is_dir():
+        return 'IS_DIR'
     else:
-        if not slient == True:
-            print('The file not exists.')
-        return 1
-    if not auto_exit == False:
-        sys.exit(1)
+        return False
+
 
 
 def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
@@ -404,13 +406,14 @@ def copy_file(src, dst):
         dst_tmp = Path(dst)
     except:
         return 'DST_INVAILD'
+    if not os.path.exists(dst):
+        os.mkdir(dst)
     if src_type == 'list':
         for tmp in src:
             try:
                 filename_tmp = Path(tmp)
             except:
                 print(tmp, 'is invaild.')
-                continue
             if filename_tmp.is_file():
                 shutil.copyfile(tmp, dst_tmp)
             elif filename_tmp.is_dir():
@@ -423,7 +426,7 @@ def copy_file(src, dst):
             filename_tmp = Path(tmp)
         except:
             print(tmp, 'is invaild.')
-            continue
+
         if filename_tmp.is_file():
             shutil.copyfile(tmp, dst_tmp)
         elif filename_tmp.is_dir():
