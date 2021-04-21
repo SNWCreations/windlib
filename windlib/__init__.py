@@ -4,25 +4,7 @@
 #   Windlib (Useful Functions Library)
 #
 #
-#   Oh, I wrote this library just to facilitate my writing of some private scripts.
-#   Don't be angry because my "Chinglish" ...
-#
-#   Version 1.5.0 (2021/4/11)
-#
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
-#
-#
-#   Functions:
-#       typeof (added in v1.1.0)
-#       check_os
-#       extract (added in v1.4.0, replace the "unzip" function)
-#       get_file
-#       find_file_on_all_partitions
-#       get_os_partition
-#       file_exists (added in v1.1.0)
-#       find_files_with_the_specified_extension (added in v1.1.0, changed in v1.2.1)
-#       get_file_with_progress (added in v1.1.0)
-#       find_str_in_file (added in v1.2.0)
 #
 #
 
@@ -39,6 +21,7 @@ import platform
 import zipfile
 import sys
 import os
+import shutil
 
 
 # some variables for functions.
@@ -375,7 +358,8 @@ def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
 
     If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
-    f_type = '.' + file_type
+    if not file_type[0] == '.':
+        f_type = '.' + file_type
     items = os.listdir(folder)
     file_list = []
     for names in items:
@@ -399,3 +383,52 @@ def find_str_in_file(string, filename, slient=True):
             counts += time
         if not slient == False:
             print("%sNumber of occurrences：%d" % (str, counts))
+
+
+
+def copy_file(src, dst):
+    """
+    Copy file.
+
+    Copy the file (or folder) to the specified directory.
+    
+    You can copy multiple files to the specified directory by listing.
+    """
+    src_type = typeof(src)
+    dst_type = typeof(dst)
+    if not src_type == 'str' or 'list':
+        return 'SRC_INVAILD'
+    if not dst_type == 'str':
+        return 'DST_INVAILD'
+    try:
+        dst_tmp = Path(dst)
+    except:
+        return 'DST_INVAILD'
+    if src_type == 'list':
+        for tmp in src:
+            try:
+                filename_tmp = Path(tmp)
+            except:
+                print(tmp, 'is invaild.')
+                continue
+            if filename_tmp.is_file():
+                shutil.copyfile(tmp, dst_tmp)
+            elif filename_tmp.is_dir():
+                shutil.copytree(tmp, dst_tmp)
+            else:
+                print(tmp, 'is not exists.')
+                continue
+    elif src_type == 'str':
+        try:
+            filename_tmp = Path(tmp)
+        except:
+            print(tmp, 'is invaild.')
+            continue
+        if filename_tmp.is_file():
+            shutil.copyfile(tmp, dst_tmp)
+        elif filename_tmp.is_dir():
+            shutil.copytree(tmp, dst_tmp)
+        else:
+            print(tmp, 'is not exists.')
+
+

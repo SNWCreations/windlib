@@ -118,9 +118,7 @@ Find the file with the specified extension name in targeted folder, and add the 
 
 The "file_type" variable must be an extension, and does not need to carry ".".
 
-For example "txt" "jar" "md" "class".
-
-Cannot be ".txt" ".jar" ".md" ".class".
+For example "txt" "jar" "md" "class", or ".txt" ".jar" ".md" ".class".
 
 If the "slient" parameter is False, a prompt will be generated when the function finishes.
 
@@ -133,6 +131,14 @@ Find target string in a file.
 "filename" parameter **must** be a valid file name (can be absolute or relative path).
 
 If the "slient" parameter is False, a prompt will be generated when the function finishes.
+
+---
+
+### **copy_file - copy the file (or folder) to the specified directory**
+
+Copy the file (or folder) to the specified directory.
+
+You can copy multiple files to the specified directory by listing.
 
 ---
 

@@ -2,19 +2,31 @@
 
 ---
 
-**v1.5.0 (Current version)**
+**v1.6.0 (Current version)**
+
+Added "copy_file" function.
+
+---
+
+**v1.5.0**
 
 The "extract" function support the ".tar.gz" files now!
 
-* *(But this new feature has not been tested!)*
+*(But this new feature has not been tested!)*
+
+---
 
 **v1.4.2**
 
 Repair the serious problem of the installation script.
 
+---
+
 **v1.4.1**
 
 Optimize the "extract" function.
+
+---
 
 **v1.4.0**
 
@@ -24,9 +36,13 @@ Format the core script (it's just beautiful and doesn't change much).
 
 Comprehensive update README.md , The use of each function is described in detail.
 
+---
+
 **v1.2.2 - v1.3.0**
 
 No update, just test and modify.
+
+---
 
 **v1.2.1**
 
