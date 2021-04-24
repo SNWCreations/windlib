@@ -31,10 +31,6 @@ found_letters = []
 saved_path = '.'
 
 
-name = 'windlib'
-version = '1.5.0'
-
-
 # The library description...
 
 """
