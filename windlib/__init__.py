@@ -28,6 +28,7 @@ import shutil
 disklst = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
            'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
 found_letters = []
+saved_path = '.'
 
 
 name = 'windlib'
@@ -390,8 +391,6 @@ def find_str_in_file(string, filename, slient=True):
 
 def copy_file(src, dst):
     """
-    Copy file.
-
     Copy the file (or folder) to the specified directory.
     
     You can copy multiple files to the specified directory by listing.
@@ -426,12 +425,88 @@ def copy_file(src, dst):
             filename_tmp = Path(tmp)
         except:
             print(tmp, 'is invaild.')
-
         if filename_tmp.is_file():
             shutil.copyfile(tmp, dst_tmp)
         elif filename_tmp.is_dir():
             shutil.copytree(tmp, dst_tmp)
         else:
             print(tmp, 'is not exists.')
+
+
+
+def is_it_broken(path):
+    """
+    Check a file or directory for corruption.
+
+    Allow a large number of directories and files to be checked through the list when called once.
+    """
+    if typeof(path) == 'list':
+        broken_files = []
+        not_found = []
+        for tmp in path:
+            if os.path.lexists(tmp) == True:
+                if os.path.exists(path) == False:
+                    broken_files.append(tmp)
+            else:
+                not_found.append(tmp)
+    elif typeof(path) == 'str':
+        if os.path.lexists(path) == True:
+            if os.path.exists(path) == False：
+                return 'IS_BROKEN'
+            else:
+                return 'NOT_BROKEN'
+        else:
+            return 'NOT_FOUND'
+
+
+
+def pushd(pushd_path='ORGIN'):
+    """
+    Temporarily switch to a directory and save the current path before switching for return on the next call.
+
+    If this function is called with no arguments, the location saved in the last call is returned.
+    """
+    if not pushd_path == 'ORGIN':
+        saved_path = os.getcwd()
+        try:
+            os.chdir(pushd_path)
+        except:
+            print('Invaild path.')
+    else:
+        os.chdir(saved_path)
+        del saved_path
+
+
+
+def get_zip_file(input_path, result):
+    """
+    Depth first traversal of the directory, with "compress_to_zip_file" function, no other purpose.
+    :param input_path:
+    :param result:
+    :return:
+    """
+    files = os.listdir(input_path)
+    for file in files:
+        if os.path.isdir(input_path + '/' + file):
+            get_zip_file(input_path + '/' + file, result)
+        else:
+            result.append(input_path + '/' + file)
+
+
+ 
+def compress_to_zip_file(input_path, output_path, output_name):
+    """
+    Compress all files in a path to a zip file.
+    :param input_path: 压缩的文件夹路径
+    :param output_path: 解压（输出）的路径
+    :param output_name: 压缩包名称
+    :return:
+    """
+    f = zipfile.ZipFile(output_path + '/' + output_name, 'w', zipfile.ZIP_DEFLATED)
+    filelists = []
+    get_zip_file(input_path, filelists)
+    for file in filelists:
+        f.write(file)
+    f.close()
 
 

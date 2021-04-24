@@ -144,4 +144,24 @@ You can copy multiple files to the specified directory by listing.
 
 ---
 
+### **is_it_broken - Check a file or directory for corruption.**
+
+Check a file or directory for corruption.
+
+Allow a large number of directories and files to be checked through the list when called once.
+
+---
+
+### **pushd - Temporarily switch to a directory.**
+
+Temporarily switch to a directory and save the current path before switching for return on the next call.
+
+If this function is called with no arguments, the location saved in the last call is returned.
+
+---
+
+###
+
+---
+
 ## Copyright (C) 2021 SNWCreations. All rights reserved.
