@@ -44,8 +44,6 @@ If your python works support multiple systems, then you can combine the supporte
 
 **Default parameters:**
 
----
-
 slient - executes without generating any information.
 
 The default value is True. The valid values are True or False.
