@@ -160,7 +160,9 @@ If this function is called with no arguments, the location saved in the last cal
 
 ---
 
-###
+### **compress_ to_ zip_ File - compress all files in a directory into a zip file.**
+
+Compress all files in a directory to a zip file.
 
 ---
 

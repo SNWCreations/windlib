@@ -165,4 +165,10 @@ broken_files: 这里存放所有损坏文件的路径
 
 ---
 
+### **compress_to_zip_file - 压缩一个目录下的所有文件到一个zip文件。**
+
+压缩一个目录下的所有文件到一个zip文件。
+
+---
+
 ## 版权所有（C）2021 SNWCreations。

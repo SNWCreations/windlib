@@ -1,8 +1,14 @@
 ## **Windlib History**
 
+**v1.7.0**
+
+Added "is_it_broken" "pushd" and "compress_to_zip_file" function.
+
+Some little fix.
+
 ---
 
-**v1.6.1 (Current version)**
+**v1.6.1**
 
 Added "file_or_dir_exists" function. (replace the "file_exists" function.)
 
