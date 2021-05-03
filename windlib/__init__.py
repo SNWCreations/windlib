@@ -12,7 +12,12 @@
 # import libraries for functions
 from clint.textui import progress
 from pathlib import Path
-import rarfile
+try:
+    import rarfile
+except (ModuleNotFoundError, ImportError):
+    RAR_SUPPORT = False
+else:
+    RAR_SUPPORT = True
 import tarfile
 import gzip
 import requests
@@ -46,7 +51,7 @@ I'm so lazy...
 """
 
 # the copyright message
-print('Windlib', version, 'by SNWCreations')
+print('Windlib by SNWCreations')
 print('Copyright (C) 2021 SNWCreations. All rights reserved.')
 
 
@@ -210,6 +215,9 @@ def extract(filename, slient=True):
             tar.extract(name, filename + "_files/")
         tar.close()
     elif filename.endswith('.rar'):
+        if RAR_SUPPORT == False:
+            print('.rar files are not supported.')
+            return
         rar = rarfile.RarFile(filename)
         if os.path.isdir(filename + "_files"):
             pass
@@ -447,7 +455,7 @@ def is_it_broken(path):
                 not_found.append(tmp)
     elif typeof(path) == 'str':
         if os.path.lexists(path) == True:
-            if os.path.exists(path) == False：
+            if os.path.exists(path):
                 return 'IS_BROKEN'
             else:
                 return 'NOT_BROKEN'

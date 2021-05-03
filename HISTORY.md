@@ -1,5 +1,11 @@
 ## **Windlib History**
 
+**v1.7.1**
+
+A bug fixed.
+
+---
+
 **v1.7.0**
 
 Added "is_it_broken" "pushd" and "compress_to_zip_file" function.

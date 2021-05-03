@@ -1,3 +1,4 @@
-dist/*
-windlib.egg-info/*
+dist/
+windlib.egg-info/
 pypi_publish.cmd
+build/
