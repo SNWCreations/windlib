@@ -10,23 +10,26 @@
 
 
 # import libraries for functions
-from clint.textui import progress
+import contextlib
+import gzip
+import os
+import platform
+import shutil
+import sys
+import tarfile
+import urllib
+import zipfile
 from pathlib import Path
+
+import requests
+from clint.textui import progress
+
 try:
     import rarfile
-except (ModuleNotFoundError, ImportError):
+except:
     RAR_SUPPORT = False
 else:
     RAR_SUPPORT = True
-import tarfile
-import gzip
-import requests
-import urllib
-import platform
-import zipfile
-import sys
-import os
-import shutil
 
 
 # some variables for functions.
@@ -171,8 +174,11 @@ def os_info(slient=True):
     else:
         if not slient == True:
             print('Encountered a return value that could not be processed.')
+        return None
     if not slient == True:
         print(os_version)
+    return os_version
+
 
 
 def extract(filename, slient=True):
@@ -310,8 +316,6 @@ def find_file_on_all_partitions(filename, slient=True):
             if not slient == True:
                 print('Done!')
                 print('The target file was not found!')
-    del now
-    del now_file
 
 
 def get_os_partition():
@@ -350,7 +354,6 @@ def file_or_dir_exists(target):
         return False
 
 
-
 def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
     """
     Find the file with the specified extension name in targeted folder, and add the file name to the "file_list" list.
@@ -373,6 +376,7 @@ def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
         if names.endswith(f_type):
             file_list.append(names)
     del items
+    return file_list
 
 
 def find_str_in_file(string, filename, slient=True):
@@ -392,11 +396,10 @@ def find_str_in_file(string, filename, slient=True):
             print("%sNumber of occurrences：%d" % (str, counts))
 
 
-
 def copy_file(src, dst):
     """
     Copy the file (or folder) to the specified directory.
-    
+
     You can copy multiple files to the specified directory by listing.
     """
     src_type = typeof(src)
@@ -437,7 +440,6 @@ def copy_file(src, dst):
             print(tmp, 'is not exists.')
 
 
-
 def is_it_broken(path):
     """
     Check a file or directory for corruption.
@@ -463,23 +465,25 @@ def is_it_broken(path):
             return 'NOT_FOUND'
 
 
-
-def pushd(pushd_path='ORGIN'):
+@contextlib.contextmanager
+def pushd(new_dir):
     """
-    Temporarily switch to a directory and save the current path before switching for return on the next call.
+    Temporarily switch the working directory to a specified directory to perform some operations.
 
-    If this function is called with no arguments, the location saved in the last call is returned.
+    After the operation is completed, return to the previous working directory.
+
+    How to use:
+
+    with pushd(directory):
+        #code
+
     """
-    if not pushd_path == 'ORGIN':
-        saved_path = os.getcwd()
-        try:
-            os.chdir(pushd_path)
-        except:
-            print('Invaild path.')
-    else:
-        os.chdir(saved_path)
-        del saved_path
-
+    previous_dir = os.getcwd()
+    os.chdir(new_dir)
+    try:
+        yield
+    finally:
+        os.chdir(previous_dir)
 
 
 def get_zip_file(input_path, result):
@@ -497,7 +501,6 @@ def get_zip_file(input_path, result):
             result.append(input_path + '/' + file)
 
 
- 
 def compress_to_zip_file(input_path, output_path, output_name):
     """
     Compress all files in a path to a zip file.
@@ -506,11 +509,10 @@ def compress_to_zip_file(input_path, output_path, output_name):
     :param output_name: 压缩包名称
     :return:
     """
-    f = zipfile.ZipFile(output_path + '/' + output_name, 'w', zipfile.ZIP_DEFLATED)
+    f = zipfile.ZipFile(output_path + '/' + output_name,
+                        'w', zipfile.ZIP_DEFLATED)
     filelists = []
     get_zip_file(input_path, filelists)
     for file in filelists:
         f.write(file)
     f.close()
-
-

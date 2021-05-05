@@ -1,5 +1,13 @@
 ## **Windlib History**
 
+**v1.7.2**
+
+Re-writed "pushd" function.
+
+Format the core script.
+
+---
+
 **v1.7.1**
 
 A bug fixed.

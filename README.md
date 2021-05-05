@@ -154,7 +154,10 @@ Allow a large number of directories and files to be checked through the list whe
 
 Temporarily switch to a directory and save the current path before switching for return on the next call.
 
-If this function is called with no arguments, the location saved in the last call is returned.
+* How to use:
+
+    with pushd(directory):
+        #code
 
 ---
 
