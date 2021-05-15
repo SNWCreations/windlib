@@ -2,13 +2,15 @@
 
 **v1.7.4**
 
-Added "get_sha1" function.
+Add "get_sha1" function.
 
 ---
 
 **v1.7.3**
 
-Big update.
+Update the "get_file" function.
+
+Update some functions.
 
 ---
 
