@@ -1,5 +1,11 @@
 ## **Windlib History**
 
+**v1.7.3**
+
+Update the "get_file" function.
+
+Update some functions.
+
 **v1.7.2**
 
 Re-writed "pushd" function.
