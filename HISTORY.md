@@ -1,5 +1,17 @@
 ## **Windlib History**
 
+**v1.7.4**
+
+Added "get_sha1" function.
+
+---
+
+**v1.7.3**
+
+Big update.
+
+---
+
 **v1.7.2**
 
 Re-writed "pushd" function.
