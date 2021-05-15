@@ -10,8 +10,18 @@
 
 
 # import libraries for functions
-import contextlib, gzip, os, platform, shutil, sys, tarfile, urllib, zipfile, requests, hashlib
+import contextlib
+import gzip
+import os
+import platform
+import shutil
+import sys
+import tarfile
+import urllib
+import zipfile
 from pathlib import Path
+
+import requests
 from clint.textui import progress
 
 try:
@@ -70,7 +80,7 @@ def typeof(variate):
     return var_type
 
 
-def check_os(wantedOSName):
+def check_os(wantedOSName, slient=True, auto_exit=False):
     """
     Through the "platform" module, the system label (the first parameter) provided in the call parameter is compared with the current system label.
 
@@ -83,35 +93,68 @@ def check_os(wantedOSName):
     Then, call it through the following method:
 
     check_os(support_list)
+
+    * Default parameters:
+
+    * slient - executes without generating any information.
+
+    The default value is True. The valid values are True or False.
+
+    * auto_exit - If the obtained system type is not what you want, it will decide whether to terminate the process according to this variable.
+
+    If the process is terminated, an error value of "1" will be returned.
+
+    The default value is False. The valid values are True or False.
     """
 
     wantedOSNameType = typeof(wantedOSName)
     if wantedOSNameType == 'list':
         if 'Java' in wantedOSName:
             if not platform.system() == 'Java':
-                return False
+                if not slient == True:
+                    print('Not the desired operating system.')
+                if not auto_exit == False:
+                    sys.exit(1)
             else:
-                return True
+                if not slient == True:
+                    print('It\'s desired opearting system.')
         if not sys.platform in wantedOSName:
-            return False
+            if not slient == True:
+                print('Not the desired operating system.')
+            if not auto_exit == False:
+                sys.exit(1)
         else:
-            return True
+            if not slient == True:
+                print('It\'s desired opearting system.')
     elif wantedOSNameType == 'str':
         if wantedOSName == 'Java':
             if not platform.system() == wantedOSName:
-                return False
+                if not slient == True:
+                    print('Not the desired operating system.')
+                if not auto_exit == False:
+                    sys.exit(1)
             else:
-                return True
+                if not slient == True:
+                    print('It\'s desired opearting system.')
         elif not platform.system() == wantedOSName:
-            return False
+            if not slient == True:
+                print('Not the desired operating system.')
+            if not auto_exit == False:
+                sys.exit(1)
         else:
-            return True
+            if not slient == True:
+                print('It\'s desired opearting system.')
 
 
-def os_info():
+def os_info(slient=True):
     """
     Get detailed information about the system, excluding information about computer accessories.
+
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
+
+    if not slient == True:
+        print('Getting operating system version...')
     if sys.platform == 'win32':
         os_version_tmp = platform.platform()
         os_vers = os_version_tmp.split('-')
@@ -129,12 +172,16 @@ def os_info():
     elif platform.system() == 'Java':
         os_version = 'Java virtual machine (you may be using Jython to call this function)'
     else:
-        return 'ERROR'
+        if not slient == True:
+            print('Encountered a return value that could not be processed.')
+        return None
+    if not slient == True:
+        print(os_version)
     return os_version
 
 
 
-def extract(filename, target_dir):
+def extract(filename, slient=True):
     """
     Unzip the compressed files.
 
@@ -142,13 +189,16 @@ def extract(filename, target_dir):
 
     You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
 
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
-    if file_or_dir_exists(target_dir) == 'NOT_FOUND':
-        os.mkdir(target_dir)
     if filename.endswith('.zip'):
         zip_file = zipfile.ZipFile(filename)
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
         for names in zip_file.namelist():
-            zip_file.extract(names, target_dir)
+            zip_file.extract(names, filename + "_files/")
         zip_file.close()
     elif filename.endswith('.gz'):
         f_name = filename.replace(".gz", "")
@@ -162,57 +212,66 @@ def extract(filename, target_dir):
     elif filename.endswith('.tar'):
         tar = tarfile.open(filename)
         names = tar.getnames()
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
+        # 因为解压后是很多文件，预先建立同名目录
         for name in names:
-            tar.extract(name, target_dir)
+            tar.extract(name, filename + "_files/")
         tar.close()
     elif filename.endswith('.rar'):
         if RAR_SUPPORT == False:
             print('.rar files are not supported.')
             return
         rar = rarfile.RarFile(filename)
-        with pushd(target_dir):
-            rar.extractall()
+        if os.path.isdir(filename + "_files"):
+            pass
+        else:
+            os.mkdir(filename + "_files")
+        os.chdir(filename + "_files")
+        rar.extractall()
         rar.close()
     elif filename.endswith("tar.gz"):
         tar = tarfile.open(filename, "r:gz")
-        with pushd(target_dir):
-            tar.extractall()
+        tar.extractall()
         tar.close()
+    else:
+        if not slient == False:
+            print('Error! Invaild file.')
+    if not slient == False:
+        print('Done!')
 
 
-
-def get_file(url, save_path='.', show_progress=False):
+def get_file(url, save_path='.', show_progress=False, slient=True):
     """
     Download a file from the Internet.
 
-    If the "show_progress" parameter is True, progress will be displayed when downloading.
-    
-    The default value of this parameter is False.
+    If the "show_progress" parameter is True, progress will be displayed when downloading. The default value of this parameter is False.
+
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     if show_progress == False:
-        filename = save_path + '/' + os.path.basename(url)
-        try:
-            r = requests.get(url, stream=True)
-        except:
-            return 'DOWNLOAD_FAILED'
-        f = open(filename, "wb")
+        filename = os.path.basename(url)
+        save_name = save_path + '/' + filename
+        if not slient == True:
+            print('Downloading', save_name)
+        r = requests.get(url, stream=True)
+        f = open(save_name, "wb")
         # chunk是指定每次写入的大小，每次只写了1024byte
         for chunk in r.iter_content(chunk_size=1024):
             if chunk:
                 f.write(chunk)
+        if not slient == True:
+            print('Completed.')
     else:
-        try:
-            res = requests.get(url, stream=True)
-        except:
-            return 'DOWNLOAD_FAILED'
+        res = requests.get(url, stream=True)
         total_length = int(res.headers.get('content-length'))
-        filename = save_path + '/' + os.path.basename(url)
+        filename = os.path.basename(url)
         with open(filename, "wb") as pypkg:
-            for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=50):
+            for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=100):
                 if chunk:
                     pypkg.write(chunk)
-    return filename
-
 
 
 def find_file_on_all_partitions(filename, slient=True):
@@ -232,15 +291,31 @@ def find_file_on_all_partitions(filename, slient=True):
     This function will find this file in the order of "A:\\example\\example.txt", "B:\\example\\example.txt", etc.
 
     If found, the drive letter of the partition where the target file can be found will be placed in the "found_letters" list.
+
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
-    for now in disklst:
-        now_file = now + ':' + os.sep + filename
-        os.path.isfile(now_file)
-        if now_file.isfile():
-            found_letters.insert(0, now)
-    if not found_letters == []:
-        return found_letters
-    return 'NOT_FOUND'
+
+    now = disklst[0]
+    now_file = now + ':' + os.sep + filename
+    os.path.isfile(now_file)
+    if now_file.isfile():
+        found_letters.insert(0, now)
+    del disklst[0]
+    if not disklst == []:
+        if not slient == True:
+            find_file_on_all_partitions(filename)
+        else:
+            find_file_on_all_partitions(filename, slient=False)
+    else:
+        if not found_letters == []:
+            if not slient == True:
+                print('Done!')
+                print(
+                    'The target file was found in the partition with these drive letters:', found_letters)
+        else:
+            if not slient == True:
+                print('Done!')
+                print('The target file was not found!')
 
 
 def get_os_partition():
@@ -304,18 +379,21 @@ def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
     return file_list
 
 
-def find_str_in_file(string, filename):
+def find_str_in_file(string, filename, slient=True):
     """
     Find target string in a file.
 
     "filename" parameter must be a valid file name (can be absolute or relative path).
+
+    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
     """
     with open(filename, 'r') as f:
         counts = 0
         for line in f.readlines():
             time = line.count(string)
             counts += time
-    return counts
+        if not slient == False:
+            print("%sNumber of occurrences：%d" % (str, counts))
 
 
 def copy_file(src, dst):
@@ -341,24 +419,25 @@ def copy_file(src, dst):
             try:
                 filename_tmp = Path(tmp)
             except:
-                continue
+                print(tmp, 'is invaild.')
             if filename_tmp.is_file():
                 shutil.copyfile(tmp, dst_tmp)
             elif filename_tmp.is_dir():
                 shutil.copytree(tmp, dst_tmp)
             else:
+                print(tmp, 'is not exists.')
                 continue
     elif src_type == 'str':
         try:
             filename_tmp = Path(tmp)
         except:
-            return 'SRC_INVAILD'
+            print(tmp, 'is invaild.')
         if filename_tmp.is_file():
             shutil.copyfile(tmp, dst_tmp)
         elif filename_tmp.is_dir():
             shutil.copytree(tmp, dst_tmp)
         else:
-            return 'SRC_NOT_FOUND'
+            print(tmp, 'is not exists.')
 
 
 def is_it_broken(path):
@@ -369,11 +448,13 @@ def is_it_broken(path):
     """
     if typeof(path) == 'list':
         broken_files = []
+        not_found = []
         for tmp in path:
             if os.path.lexists(tmp) == True:
                 if os.path.exists(path) == False:
                     broken_files.append(tmp)
-        return broken_files
+            else:
+                not_found.append(tmp)
     elif typeof(path) == 'str':
         if os.path.lexists(path) == True:
             if os.path.exists(path):
@@ -435,21 +516,3 @@ def compress_to_zip_file(input_path, output_path, output_name):
     for file in filelists:
         f.write(file)
     f.close()
-
-
-def get_sha1(path):
-    sha1_encrypt = hashlib.sha1()
-    try:
-        a = open(fr'{path}', 'rb')
-    except:
-        return 'FILENAME_INVAILD'
-    while True:
-        b = a.read(128000)
-        sha1_encrypt.update(b)
-        if not b:
-            break
-    a.close()
-    will_return = sha1_encrypt.hexdigest()
-    return will_return
-
-
