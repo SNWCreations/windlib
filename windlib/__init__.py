@@ -211,7 +211,7 @@ def get_file(url, save_path='.', show_progress=False):
             for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=50):
                 if chunk:
                     pypkg.write(chunk)
-    return filename
+    return os.path.abspath(filename)
 
 
 
