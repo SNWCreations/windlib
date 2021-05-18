@@ -1,12 +1,20 @@
 ## **Windlib History**
 
+**v1.7.6**
+
+Optimize "get_sha1" function.
+
+Added "get_md5" function.
+
 **v1.7.5**
 
 Fix a bug in "get_file" function.
 
+---
+
 **v1.7.4**
 
-Add "get_sha1" function.
+Added "get_sha1" function.
 
 ---
 

@@ -142,9 +142,21 @@ Temporarily switch to a directory and save the current path before switching for
 
 ---
 
-### **compress_ to_ zip_ File - compress all files in a directory into a zip file.**
+### **compress_to_zip_file - compress all files in a directory into a zip file.**
 
 Compress all files in a directory to a zip file.
+
+---
+
+### **get_sha1 - Get SHA1 value of a file.**
+
+Get SHA1 value of a file.
+
+---
+
+### **get_md5 - Get MD5 value of a file.**
+
+Get MD5 value of a file.
 
 ---
 

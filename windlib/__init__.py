@@ -438,18 +438,32 @@ def compress_to_zip_file(input_path, output_path, output_name):
 
 
 def get_sha1(path):
-    sha1_encrypt = hashlib.sha1()
+    sha1_obj = hashlib.sha1()
     try:
         a = open(fr'{path}', 'rb')
     except:
         return 'FILENAME_INVAILD'
     while True:
         b = a.read(128000)
-        sha1_encrypt.update(b)
+        sha1_obj.update(b)
         if not b:
             break
     a.close()
-    will_return = sha1_encrypt.hexdigest()
-    return will_return
+    return sha1_obj.hexdigest()
+
+
+def get_md5(path):
+    md5_obj = hashlib.md5()
+    try:
+        a = open(path, 'rb')
+    except:
+        return 'FILENAME_INVAILD'
+    while True:
+        b = a.read(128000)
+        md5_obj.update(b)
+        if not b:
+            break
+        a.close()
+        return md5_obj.hexdigest()
 
 
