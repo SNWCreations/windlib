@@ -192,7 +192,7 @@ def get_file(url, save_path='.', show_progress=False):
     if show_progress == False:
         filename = save_path + '/' + os.path.basename(url)
         try:
-            r = requests.get(url, stream=True)
+            r = requests.get(url, stream=True, timeout=30)
         except:
             return 'DOWNLOAD_FAILED'
         f = open(filename, "wb")

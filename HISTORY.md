@@ -1,5 +1,9 @@
 ## **Windlib History**
 
+**v1.7.7**
+
+Updated "get_file" function.
+
 **v1.7.6**
 
 Optimize "get_sha1" function.
