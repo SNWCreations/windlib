@@ -1,5 +1,7 @@
 # **Windlib**
 
+WARNING: THIS REPO IS DEPRECATED. PLEASE CHECK UPDATES ON GITEE (A PLATFORM IN CHINA) www.gitee.com/SNWCreations/windlib
+
 A useful functions library, Created by SNWCreations.
 
 This is a useful functions library for everyone.
