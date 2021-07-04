@@ -1,163 +1,166 @@
 # **Windlib**
 
-A useful functions library, Created by SNWCreations.
+有用的函数库，由SNWCreations创建。
 
-This is a useful functions library for everyone.
+这对每个人都是有用的函数库。
 
-If you have any questions, please give me feedback in issues.
+## **用法**
 
-But I may not reply in time, please forgive me.
+### **typeof**
 
-#### English / [简体中文](https://github.com/SNWCreations/windlib/blob/main/README-zh_Hans.md)
+typeof(variate) -> str
 
-## **Usage**
+检测变量类型，返回字符串。
 
-***Tip: If you use the "import windlib" method to import my function, then the function name in the example below should be changed to "windlib.\<function name\>"
-If you use the "from windlib import \<function name\>" method, the "windlib" prefix is not required.***
+示例:
 
----
-
-### **typeof - Detect the type of a variable.**
-
-    For example, I define a variable "a" as 10 (this is an integer number, that is, "int") and call this function with the following method:
-
-    typeof(a)
-
-    This function returns the string 'int'.
+    >>> a = 10
+    >>> typeof(a)
+    'int'
 
 ---
 
-### **check_os - Check the OS information.**
+### **extract**
 
-Through the "platform" module, the system label (the first parameter) provided in the call parameter is compared with the current system label.
+extract(filename: str, target_dir: str) -> None
 
-The function "platform.system()" may return a string, which is a system label that can be used for comparison.
+支持“.zip”，“.gz”，“.tar”，“.rar”，“.tar.gz”文件。
 
-If your python works support multiple systems, then you can combine the supported system types into a list, and then call this function.
+如果需要支持rar文件，则需要 "rarfile" 库。
 
-    For example, if a work supports Windows, Mac OS, Jython (Python in Java Virtual Machine) and Linux, then the labels of these three systems can be defined as support_list: ['win32','darwin','linux','Java']
-
-    Then, call it through the following method:
-
-    check_os(support_list)
+您可以从 https://sourceforge.net/projects/rarfile.berlios/files/latest/download 下载 rarfile 库。
 
 ---
 
-### **os_info - Get the OS information.**
+### **get_file-从Internet下载文件。**
 
-Get detailed information about the system, **excluding information about computer accessories.**
+get_file(url: str, save_path: str) -> str
 
-The full information will returned.
+从 互联网 下载文件，并附带一个进度条。
 
----
+当下载出错时，会返回'DOWNLOAD_FAILED'。
 
-### **extract - Unzip the compressed files.**
-
-Unzip the compressed files.
-
-Support ".zip" ".gz" ".tar" ".rar" ".tar.gz" files.
-
-The "rarfile" library is required for support the ".rar" files.
-
-You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
+当下载成功时，目标文件在本地的路径会被返回。
 
 ---
 
-### **get_file - Download a file from Internet.**
+### **file_or_dir_exists**
 
-Download a file from the Internet.
+file_or_dir_exists(target: str) -> str
 
-If the "show_progress" parameter is True, progress will be displayed when downloading. The default value of this parameter is False.
+检查指定的文件(或文件夹)是否存在。
 
-String 'DOWNLOAD_FAILED' will be returned when download failed.
+当目标是目录时，会返回'IS_DIR'。
 
-The path of target file on local disk will be returned when download completed.
+当目标是文件时，会返回'IS_FILE'。
 
----
+当函数找不到目标时，会返回'NOT_FOUND'。
 
-### **get_os_partition - Get the drive letter of the system.**
-
-Get the drive letter of the partition where the system is located.
-
-Will return a string. (The content may be any letter from A-Z)
+当目标不是有效路径是，会返回'TARGET_INVAILD'。
 
 ---
 
-### **file_or_dir_exists - Check if the file or directory exists.**
+### **find_files_with_the_specified_extension**
 
-Check if the file or directory exists.
+find_files_with_the_specified_extension(file_type: str, folder: str, slient: bool) -> list
 
-When the target is a file, 'IS_FILE' is returned.
+在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
 
-When the target is a directory, 'IS_DIR' is returned.
+参数 “folder” 的默认值为“.” （当前目录）
 
-When the function cannot find the target, it returns 'NOT_FOUND'.
+“file_type” 变量必须是扩展名，并且不需要带有 “.” 。
 
----
-
-### **find_files_with_the_specified_extension - Find the file with the specified extension name in targeted folder.**
-
-Find the file with the specified extension name in targeted folder, and add the file name to the **"file_list"** list.
-
-*The default value of parameter "folder" is '.' (Current dir).*
-
-The "file_type" variable must be an extension, and does not need to carry ".".
-
-For example "txt" "jar" "md" "class", or ".txt" ".jar" ".md" ".class".
+例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
 
 ---
 
-### **find_str_in_file - Find the string in a file.**
+### **copy_file**
 
-Find target string in a file.
+copy_file(src: str or list, dst: str) -> str
 
-"filename" parameter **must** be a valid file name (can be absolute or relative path).
+复制文件（或文件夹）到指定的目录。
 
----
-
-### **copy_file - copy the file (or folder) to the specified directory**
-
-Copy the file (or folder) to the specified directory.
-
-You can copy multiple files to the specified directory by listing.
+可以通过列表的方式同时将多个文件复制到指定目录。
 
 ---
 
-### **is_it_broken - Check a file or directory for corruption.**
+### **is_it_broken**
 
-Check a file or directory for corruption.
+is_it_broken(path: str or list) -> bool or list
 
-Allow a large number of directories and files to be checked through the list when called once.
+检查一个文件（或目录）是否损坏。
 
----
+允许调用时通过列表检查大量文件和目录。
 
-### **pushd - Temporarily switch to a directory.**
+若使用列表来检查文件，则返回一个记录所有损坏的文件路径的列表。
 
-Temporarily switch to a directory and save the current path before switching for return on the next call.
+示例:
 
-* How to use:
-
-    with pushd(directory):
-        #code
-
----
-
-### **compress_to_zip_file - compress all files in a directory into a zip file.**
-
-Compress all files in a directory to a zip file.
+    >>> is_it_broken('./aaa.txt')
+    False
+    >>> is_it_broken(['./aaa.txt', './bbb.txt', './ccc.txt'])
+    []
 
 ---
 
-### **get_sha1 - Get SHA1 value of a file.**
+### **pushd**
 
-Get SHA1 value of a file.
+pushd(new_dir: str)
+
+临时切换到一个目录，操作完成后自动返回调用前路径。
+
+此函数为生成器，请配合 with 语句使用。
+
+示例:
+
+    >>> print(os.getcwd())
+    'D:\\windlib-test'
+    >>> with pushd('./aaa'):
+    ...    print(os.getcwd())
+    'D:\\windlib-test\\aaa'
+    >>> print(os.getcwd())
+    'D:\\windlib-test'
 
 ---
 
-### **get_md5 - Get MD5 value of a file.**
+### **compress_to_zip_file**
 
-Get MD5 value of a file.
+compress_to_zip_file(input_path: str, output_path: str, output_name: str) -> None
+
+压缩一个目录下的所有文件到一个zip文件，无返回值。
+
+示例:
+
+    >>> compress_to_zip_file('./a', '.', 'a.zip')
+    >>>
 
 ---
 
-## Copyright (C) 2021 SNWCreations. All rights reserved.
+### **get_sha1**
+
+get_sha1(path: str) -> str
+
+获取一个文件的SHA1校验值，返回值是一个字符串。
+
+示例:
+
+    >>> get_sha1('setup.py')
+    'acdf35508f4dfb49e522f161a3e3e885adbf3b99'
+
+---
+
+### **get_md5**
+
+获取一个文件的MD5校验值，返回值是一个字符串。
+
+示例:
+
+    >>> get_md5('setup.py')
+    'ec210fa5cc05bed851da3fe222b733a9'
+
+---
+
+版权所有 (C) 2021 SNWCreations。
+
+欢迎对此库做出 Commit 和 Pull Request!
+

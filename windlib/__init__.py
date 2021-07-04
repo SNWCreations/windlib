@@ -10,47 +10,31 @@
 
 
 # import libraries for functions
-import contextlib, gzip, os, platform, shutil, sys, tarfile, urllib, zipfile, requests, hashlib
+import contextlib
+import gzip
+import os
+import platform
+import shutil
+import sys
+import tarfile
+import urllib
+import zipfile
+import requests
+import hashlib
 from pathlib import Path
 from clint.textui import progress
 
-try:
-    import rarfile
-except:
-    RAR_SUPPORT = False
-else:
-    RAR_SUPPORT = True
-
-
-# some variables for functions.
-disklst = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L',
-           'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
-found_letters = []
-saved_path = '.'
-
-
-# The library description...
-
-"""
-Windlib by SNWCreations
-
-If you will use this library, I suggest importing the functions in this library through the "from" statement.
-
-A useful function library for me!
-
-I'm so lazy...
-
-(C) 2021 SNWCreations. All rights reserved.
-"""
-
 # the copyright message
-print('Windlib by SNWCreations')
+print('windlib by SNWCreations')
 print('Copyright (C) 2021 SNWCreations. All rights reserved.')
 
 
-def typeof(variate):
+def typeof(variate) -> str:
     """
-    Detect the type of a variable.
+    检测一个变量的类型，返回值是一个字符串。
+
+    :param variate: 被检测的变量
+    :return: 一个字符串
     """
     var_type = None
     if isinstance(variate, int):
@@ -70,78 +54,13 @@ def typeof(variate):
     return var_type
 
 
-def check_os(wantedOSName):
+def extract(filename: str, target_dir: str) -> None:
     """
-    Through the "platform" module, the system label (the first parameter) provided in the call parameter is compared with the current system label.
+    解压缩文件。
 
-    The function "platform.system()" may return a string, which is a system label that can be used for comparison.
-
-    If your python works support multiple systems, then you can combine the supported system types into a list, and then call this function.
-
-    For example, if a work supports Windows, Mac OS, Jython (Python in Java Virtual Machine) and Linux, then the labels of these three systems can be defined as support_list: ['win32','darwin','linux','Java']
-
-    Then, call it through the following method:
-
-    check_os(support_list)
-    """
-
-    wantedOSNameType = typeof(wantedOSName)
-    if wantedOSNameType == 'list':
-        if 'Java' in wantedOSName:
-            if not platform.system() == 'Java':
-                return False
-            else:
-                return True
-        if not sys.platform in wantedOSName:
-            return False
-        else:
-            return True
-    elif wantedOSNameType == 'str':
-        if wantedOSName == 'Java':
-            if not platform.system() == wantedOSName:
-                return False
-            else:
-                return True
-        elif not platform.system() == wantedOSName:
-            return False
-        else:
-            return True
-
-
-def os_info():
-    """
-    Get detailed information about the system, excluding information about computer accessories.
-    """
-    if sys.platform == 'win32':
-        os_version_tmp = platform.platform()
-        os_vers = os_version_tmp.split('-')
-        os_edition = str(platform.win32_edition())
-        os_arch = platform.architecture()
-        os_version = 'Microsoft' + \
-            os_vers[0] + ' ' + os_vers[1] + ' ' + \
-            os_edition + ' ' + os_vers[2] + ' ' + os_arch[0]
-    elif sys.platform == 'darwin':
-        os_version_tmp = platform.platform()
-        os_version = os_version_tmp.replace('-', ' ')
-    elif sys.platform == 'linux':
-        os_version_tmp = platform.platform()
-        os_version = os_version_tmp.replace('-', ' ')
-    elif platform.system() == 'Java':
-        os_version = 'Java virtual machine (you may be using Jython to call this function)'
-    else:
-        return 'ERROR'
-    return os_version
-
-
-
-def extract(filename, target_dir):
-    """
-    Unzip the compressed files.
-
-    The "rarfile" library is required for support the rar files.
-
-    You can download the "rarfile" library at https://sourceforge.net/projects/rarfile.berlios/files/latest/download .
-
+    :param filename: 被解压的文件名
+    :param target_dir: 解压到
+    :return:
     """
     if file_or_dir_exists(target_dir) == 'NOT_FOUND':
         os.mkdir(target_dir)
@@ -152,13 +71,9 @@ def extract(filename, target_dir):
         zip_file.close()
     elif filename.endswith('.gz'):
         f_name = filename.replace(".gz", "")
-        # 获取文件的名称，去掉
         g_file = gzip.GzipFile(filename)
-        # 创建gzip对象
         open(f_name, "w+").write(g_file.read())
-        # gzip对象用read()打开后，写入open()建立的文件里。
         g_file.close()
-        # 关闭gzip对象
     elif filename.endswith('.tar'):
         tar = tarfile.open(filename)
         names = tar.getnames()
@@ -166,8 +81,9 @@ def extract(filename, target_dir):
             tar.extract(name, target_dir)
         tar.close()
     elif filename.endswith('.rar'):
-        if RAR_SUPPORT == False:
-            print('.rar files are not supported.')
+        try:
+            import rarfile
+        except:
             return
         rar = rarfile.RarFile(filename)
         with pushd(target_dir):
@@ -178,121 +94,64 @@ def extract(filename, target_dir):
         with pushd(target_dir):
             tar.extractall()
         tar.close()
-
-
-
-def get_file(url, save_path='.', show_progress=False):
-    """
-    Download a file from the Internet.
-
-    If the "show_progress" parameter is True, progress will be displayed when downloading.
-    
-    The default value of this parameter is False.
-    """
-    if show_progress == False:
-        filename = save_path + '/' + os.path.basename(url)
-        try:
-            r = requests.get(url, stream=True, timeout=30)
-        except:
-            return 'DOWNLOAD_FAILED'
-        f = open(filename, "wb")
-        # chunk是指定每次写入的大小，每次只写了1024byte
-        for chunk in r.iter_content(chunk_size=1024):
-            if chunk:
-                f.write(chunk)
     else:
-        try:
-            res = requests.get(url, stream=True)
-        except:
-            return 'DOWNLOAD_FAILED'
-        total_length = int(res.headers.get('content-length'))
-        filename = save_path + '/' + os.path.basename(url)
-        with open(filename, "wb") as pypkg:
-            for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=50):
-                if chunk:
-                    pypkg.write(chunk)
+        return 'UNKNOWN_FORMAT'
+    return target_dir
+
+
+def get_file(url: str, save_path: str = '.', timeout: int = 10) -> str:
+    """
+    从互联网下载文件。
+
+    :param url: 被下载文件的URL
+    :param save_path: 保存路径，默认为当前路径
+    :param timeout: 超时时长，单位为秒，默认为 10
+    :return: 下载后的文件名，下载失败返回'DOWNLOAD_FAILED'
+    """
+    save_path = os.path.abspath(save_path)
+    try:
+        res = requests.get(url, stream=True, headers={
+                           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'}, timeout=timeout)
+    except:
+        return 'DOWNLOAD_FAILED'
+    total_length = int(res.headers.get('content-length'))
+    filename = save_path + '/' + os.path.basename(url)
+    with open(filename, "wb") as pypkg:
+        for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=50):
+            if chunk:
+                pypkg.write(chunk)
     return os.path.abspath(filename)
 
 
-
-def find_file_on_all_partitions(filename, slient=True):
+def file_or_dir_exists(target: str) -> str:
     """
-    Find files on all hard disk partitions.
+    检查指定的文件(或文件夹)是否存在。
 
-    For example, if you want to find a file called "example.txt" on all hard disk partitions, then you should call it like this:
+    :param target: 目标路径
 
-    find_file_on_all_partitions('example.txt')
-
-    This function will search for this file in the order of "A:\\example.txt", "B:\\example.txt", etc.
-
-    For another example, if you want to find a file called "example.txt" in the "example" folder on all hard disk partitions, then you should call:
-
-    find_file_on_all_partitions('example/example.txt')
-
-    This function will find this file in the order of "A:\\example\\example.txt", "B:\\example\\example.txt", etc.
-
-    If found, the drive letter of the partition where the target file can be found will be placed in the "found_letters" list.
-    """
-    for now in disklst:
-        now_file = now + ':' + os.sep + filename
-        os.path.isfile(now_file)
-        if now_file.isfile():
-            found_letters.insert(0, now)
-    if not found_letters == []:
-        return found_letters
-    return 'NOT_FOUND'
-
-
-def get_os_partition():
-    """
-    Get the drive letter of the partition where the system is located.
-
-    Will return a variable "os_partition".
-    """
-
-    os_partition_tmp = os.getenv("SystemDrive")
-    os_partition = os_partition_tmp.replace(':', '')
-    del os_partition_tmp
-    return os_partition
-
-
-def file_or_dir_exists(target):
-    """
-    Check if the file or directory exists.
-
-    When the target is a file, 'IS_FILE' is returned.
-
-    When the target is a directory, 'IS_DIR' is returned.
-
-    When the function cannot find the target, it returns 'NOT_FOUND'.
-
+    :return: 当目标是目录时，会返回'IS_DIR'，当目标是文件时，会返回'IS_FILE'，当函数找不到目标时，会返回'NOT_FOUND'，当目标不是有效路径是，会返回'TARGET_INVAILD'。
     """
     try:
-        file = Path(target)
+        f = Path(target)
     except:
         return 'TARGET_INVAILD'
-    if file.is_file():
+    if f.is_file():
         return 'IS_FILE'
-    elif file.is_dir():
+    elif f.is_dir():
         return 'IS_DIR'
     else:
-        return False
+        return 'NOT_FOUND'
 
 
-def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
+def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -> list:
     """
-    Find the file with the specified extension name in targeted folder, and add the file name to the "file_list" list.
+    在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
 
-    The default value of parameter "folder" is '.' (Current dir).
+    :param folder: 从哪里查找，默认值为当前目录。
 
-    The "file_type" variable must be an extension, and does not need to carry ".".
-
-    For example "txt" "jar" "md" "class"
-
-    Cannot be ".txt" ".jar" ".md" ".class"
-
-    If the "slient" parameter is False, a prompt will be generated when the function starts and finishes.
+    :param file_type: 一个扩展名，不需要带有 “.” 。例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
     """
+    folder = os.path.abspath(folder)
     if not file_type[0] == '.':
         f_type = '.' + file_type
     items = os.listdir(folder)
@@ -300,102 +159,72 @@ def find_files_with_the_specified_extension(file_type, folder='.', slient=True):
     for names in items:
         if names.endswith(f_type):
             file_list.append(names)
-    del items
     return file_list
 
 
-def find_str_in_file(string, filename):
+def copy_file(src: str or list, dst: str) -> str:
     """
-    Find target string in a file.
+    复制文件（或文件夹）到指定的目录。
 
-    "filename" parameter must be a valid file name (can be absolute or relative path).
-    """
-    with open(filename, 'r') as f:
-        counts = 0
-        for line in f.readlines():
-            time = line.count(string)
-            counts += time
-    return counts
+    可以通过列表的方式同时将多个文件复制到指定目录。
 
-
-def copy_file(src, dst):
-    """
-    Copy the file (or folder) to the specified directory.
-
-    You can copy multiple files to the specified directory by listing.
+    :param src: 源文件或目录
+    :param dst: 目标路径
+    :return: 默认无返回值，若源文件或目录没有找到，会返回'SRC_NOT_FOUND'。
     """
     src_type = typeof(src)
-    dst_type = typeof(dst)
-    if not src_type == 'str' or 'list':
-        return 'SRC_INVAILD'
-    if not dst_type == 'str':
-        return 'DST_INVAILD'
-    try:
-        dst_tmp = Path(dst)
-    except:
-        return 'DST_INVAILD'
     if not os.path.exists(dst):
-        os.mkdir(dst)
+        os.makedirs(dst, exist_ok=True)
     if src_type == 'list':
         for tmp in src:
-            try:
-                filename_tmp = Path(tmp)
-            except:
-                continue
-            if filename_tmp.is_file():
-                shutil.copyfile(tmp, dst_tmp)
-            elif filename_tmp.is_dir():
-                shutil.copytree(tmp, dst_tmp)
-            else:
-                continue
+            ftmp = Path(tmp)
+            if ftmp.is_file():
+                shutil.copyfile(tmp, dst)
+            elif ftmp.is_dir():
+                shutil.copytree(tmp, dst)
     elif src_type == 'str':
-        try:
-            filename_tmp = Path(tmp)
-        except:
-            return 'SRC_INVAILD'
-        if filename_tmp.is_file():
-            shutil.copyfile(tmp, dst_tmp)
-        elif filename_tmp.is_dir():
-            shutil.copytree(tmp, dst_tmp)
+        ftmp = Path(tmp)
+        if ftmp.is_file():
+            shutil.copyfile(tmp, dst)
+        elif ftmp.is_dir():
+            shutil.copytree(tmp, dst)
         else:
             return 'SRC_NOT_FOUND'
 
 
-def is_it_broken(path):
+def is_it_broken(path: str or list) -> bool or list:
     """
-    Check a file or directory for corruption.
+    检查一个文件（或目录）是否损坏。
 
-    Allow a large number of directories and files to be checked through the list when called once.
+    允许调用时通过列表检查大量文件和目录。
+
+    若使用列表来检查文件，则返回一个记录所有损坏的文件路径的列表。
+
+    :param path: 将要检查的路径
+    :return: 布尔值或列表
     """
     if typeof(path) == 'list':
         broken_files = []
         for tmp in path:
-            if os.path.lexists(tmp) == True:
-                if os.path.exists(path) == False:
-                    broken_files.append(tmp)
+            if os.path.lexists(tmp) and not os.path.exists(path):
+                broken_files.append(tmp)
         return broken_files
     elif typeof(path) == 'str':
         if os.path.lexists(path) == True:
             if os.path.exists(path):
-                return 'IS_BROKEN'
-            else:
-                return 'NOT_BROKEN'
-        else:
-            return 'NOT_FOUND'
+                return True
+            return False
+        return False
 
 
 @contextlib.contextmanager
-def pushd(new_dir):
+def pushd(new_dir: str):
     """
-    Temporarily switch the working directory to a specified directory to perform some operations.
+    临时切换到一个目录，操作完成后自动返回调用前路径。
 
-    After the operation is completed, return to the previous working directory.
+    此函数为生成器，请配合 with 语句使用。
 
-    How to use:
-
-    with pushd(directory):
-        #code
-
+    :param new_dir: 将要切换的路径
     """
     previous_dir = os.getcwd()
     os.chdir(new_dir)
@@ -405,44 +234,38 @@ def pushd(new_dir):
         os.chdir(previous_dir)
 
 
-def get_zip_file(input_path, result):
+def compress_to_zip_file(input_path: str, output_name: str, output_path: str = '.') -> None:
     """
-    Depth first traversal of the directory, with "compress_to_zip_file" function, no other purpose.
-    :param input_path:
-    :param result:
-    :return:
-    """
-    files = os.listdir(input_path)
-    for file in files:
-        if os.path.isdir(input_path + '/' + file):
-            get_zip_file(input_path + '/' + file, result)
-        else:
-            result.append(input_path + '/' + file)
-
-
-def compress_to_zip_file(input_path, output_path, output_name):
-    """
-    Compress all files in a path to a zip file.
+    压缩一个目录下的所有文件到一个zip文件，无返回值。
     :param input_path: 压缩的文件夹路径
-    :param output_path: 解压（输出）的路径
     :param output_name: 压缩包名称
+    :param output_path: 解压（输出）的路径
     :return:
     """
     f = zipfile.ZipFile(output_path + '/' + output_name,
                         'w', zipfile.ZIP_DEFLATED)
     filelists = []
-    get_zip_file(input_path, filelists)
-    for file in filelists:
-        f.write(file)
+    for root, dirs, files in os.walk(input_path, topdown=True):
+        for name in files:
+            filelists.append(os.path.join(root, name))
+        for name in dirs:
+            filelists.append(os.path.join(root, name))
+    for fi in filelists:
+        f.write(fi)
     f.close()
 
 
-def get_sha1(path):
+def get_sha1(path: str) -> str:
+    """
+    获取一个文件的SHA1校验值，返回值是一个字符串。
+
+    :param path: 目标文件名
+    """
     sha1_obj = hashlib.sha1()
     try:
         a = open(fr'{path}', 'rb')
     except:
-        return 'FILENAME_INVAILD'
+        return 'FINVAILD'
     while True:
         b = a.read(128000)
         sha1_obj.update(b)
@@ -452,18 +275,21 @@ def get_sha1(path):
     return sha1_obj.hexdigest()
 
 
-def get_md5(path):
+def get_md5(path: str) -> str:
+    """
+    获取一个文件的MD5校验值，返回值是一个字符串。
+
+    :param path: 目标文件名
+    """
     md5_obj = hashlib.md5()
     try:
         a = open(path, 'rb')
     except:
-        return 'FILENAME_INVAILD'
+        return 'FINVAILD'
     while True:
         b = a.read(128000)
         md5_obj.update(b)
         if not b:
             break
         a.close()
-        return md5_obj.hexdigest()
-
-
+    return md5_obj.hexdigest()
