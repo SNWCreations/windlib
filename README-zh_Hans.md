@@ -1,5 +1,7 @@
 # **Windlib**
 
+警告：此仓库已弃用，请到Gitee上继续查看更新 www.gitee.com/SNWCreations/windlib
+
 有用的函数库，由SNWCreations创建。
 
 这对每个人都是有用的函数库。
