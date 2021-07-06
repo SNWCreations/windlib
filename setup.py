@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setup(
     name="windlib",
-    version="1.7.9-hotfix",
+    version="1.7.10",
     author="SNWCreations",
     author_email="snwcreations@qq.com",
     description="A useful functions library for everyone.",
