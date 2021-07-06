@@ -251,7 +251,7 @@ def compress(input_path: str, output_name: str, output_path: str = '.') -> str:
     :param output_path: 输出的路径
     :return: 压缩包文件的完整路径
     """
-    fname = os.path.abspath(os.path.join(output_path, output_name + '.' + ext))
+    fname = os.path.abspath(os.path.join(output_path, output_name))
     if output_name.endswith('tar'):
         f = tarfile.open(fname, "w:")
     elif output_name.endswith('.tar.gz'):
