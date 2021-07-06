@@ -2,7 +2,7 @@
 
 有用的函数库，由SNWCreations创建。
 
-这对每个人都是有用的函数库。
+只是为个人使用而编写，但我希望这能帮助到你。
 
 ## **用法**
 
@@ -22,13 +22,19 @@ typeof(variate) -> str
 
 ### **extract**
 
-extract(filename: str, target_dir: str) -> None
+extract(filename: str, target_dir: str) -> str
 
-支持“.zip”，“.gz”，“.tar”，“.rar”，“.tar.gz”文件。
+支持 ".zip" ".gz" ".tar" ".rar" ".tar.gz" 文件。
 
 如果需要支持rar文件，则需要 "rarfile" 库。
 
 您可以从 https://sourceforge.net/projects/rarfile.berlios/files/latest/download 下载 rarfile 库。
+
+示例:
+
+    >>> extract('a.zip', 'a')
+    'OK'
+    >>>
 
 ---
 
@@ -36,11 +42,15 @@ extract(filename: str, target_dir: str) -> None
 
 get_file(url: str, save_path: str) -> str
 
-从 互联网 下载文件，并附带一个进度条。
+从互联网下载文件，并附带一个进度条。
 
-当下载出错时，会返回'DOWNLOAD_FAILED'。
+参数:
 
-当下载成功时，目标文件在本地的路径会被返回。
+    url: 被下载文件的URL
+    save_path: 保存路径，默认为当前路径
+    timeout: 超时时长，单位为秒，默认为 10
+
+返回: 下载后的文件名，下载失败返回'DOWNLOAD_FAILED'
 
 ---
 
@@ -50,13 +60,19 @@ file_or_dir_exists(target: str) -> str
 
 检查指定的文件(或文件夹)是否存在。
 
-当目标是目录时，会返回'IS_DIR'。
+参数:
 
-当目标是文件时，会返回'IS_FILE'。
+    target: 目标路径
 
-当函数找不到目标时，会返回'NOT_FOUND'。
+返回:
 
-当目标不是有效路径是，会返回'TARGET_INVAILD'。
+    当目标是目录时，会返回'IS_DIR'。
+
+    当目标是文件时，会返回'IS_FILE'。
+
+    当函数找不到目标时，会返回'NOT_FOUND'。
+
+    当目标不是有效路径是，会返回'TARGET_INVAILD'。
 
 ---
 
@@ -66,11 +82,12 @@ find_files_with_the_specified_extension(file_type: str, folder: str, slient: boo
 
 在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
 
-参数 “folder” 的默认值为“.” （当前目录）
+参数:
 
-“file_type” 变量必须是扩展名，并且不需要带有 “.” 。
+    folder: 从哪里查找，默认值为当前目录。
+    file_type: 一个扩展名，不需要带有 “.” 。例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
 
-例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
+返回: 被筛选的文件名的列表
 
 ---
 
@@ -81,6 +98,13 @@ copy_file(src: str or list, dst: str) -> str
 复制文件（或文件夹）到指定的目录。
 
 可以通过列表的方式同时将多个文件复制到指定目录。
+
+参数:
+
+    src: 源文件或目录
+    dst: 目标路径
+
+返回: 默认无返回值，若源文件或目录没有找到，会返回'SRC_NOT_FOUND'。
 
 ---
 
@@ -93,6 +117,10 @@ is_it_broken(path: str or list) -> bool or list
 允许调用时通过列表检查大量文件和目录。
 
 若使用列表来检查文件，则返回一个记录所有损坏的文件路径的列表。
+
+参数:
+
+    path: 文件路径
 
 示例:
 
@@ -111,6 +139,10 @@ pushd(new_dir: str)
 
 此函数为生成器，请配合 with 语句使用。
 
+参数:
+
+    new_dir: 路径
+
 示例:
 
     >>> print(os.getcwd())
@@ -123,15 +155,28 @@ pushd(new_dir: str)
 
 ---
 
-### **compress_to_zip_file**
+### **compress**
 
-compress_to_zip_file(input_path: str, output_path: str, output_name: str) -> None
+compress(input_path: str, output_name: str, output_path: str = '.', ext='zip') -> str
 
 压缩一个目录下的所有文件到一个zip文件，无返回值。
 
+参数:
+
+    input_path: 压缩的文件夹路径
+
+    output_name: 压缩包名称 (不需要带扩展名)
+
+    output_path: 输出的路径
+
+    ext: 压缩包类型 (有效值: 'zip', 'tar', 'tar.gz')
+
+    返回: 压缩包文件的完整路径
+
 示例:
 
-    >>> compress_to_zip_file('./a', '.', 'a.zip')
+    >>> compress('./a', 'a', ext='zip')
+    'D:\windlib-test\a.zip'
     >>>
 
 ---
@@ -141,6 +186,10 @@ compress_to_zip_file(input_path: str, output_path: str, output_name: str) -> Non
 get_sha1(path: str) -> str
 
 获取一个文件的SHA1校验值，返回值是一个字符串。
+
+参数:
+
+    path: 文件路径
 
 示例:
 
@@ -152,6 +201,10 @@ get_sha1(path: str) -> str
 ### **get_md5**
 
 获取一个文件的MD5校验值，返回值是一个字符串。
+
+参数:
+
+    path: 文件路径
 
 示例:
 

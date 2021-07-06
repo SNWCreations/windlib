@@ -8,7 +8,7 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setup(
     name="windlib",
-    version="1.7.8",
+    version="1.7.9",
     author="SNWCreations",
     author_email="snwcreations@qq.com",
     description="A useful functions library for everyone.",
@@ -19,19 +19,18 @@ setup(
     project_urls={
         "Bug Tracker": "https://gitee.com/SNWCreations/windlib/issues",
     },
-    requries=[
+    requires=[
         'contextlib',
         'gzip',
         'tarfile',
     ],
     python_requires=">=3.6",
     classifiers=[
-        "Development Status :: 4 - Beta",
+        "Development Status :: 5 - Production/Stable",
         "Intended Audience :: Developers",
-        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3 :: Only",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
-        "Natural Language :: Chinese (Simplified)",
-        "Topic :: Software Development :: Libraries",
+        "Topic :: Software Development :: Libraries :: Python Modules",
     ],
 )

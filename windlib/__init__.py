@@ -8,20 +8,26 @@
 #
 #
 
+__doc__ = """
+windlib by SNWCreations
+
+Copyright (C) 2021 SNWCreations. All rights reserved.
+
+This library is only for my personal use, I hope to help you.
+"""
+
 
 # import libraries for functions
 import contextlib
-import gzip
-import os
-import platform
-import shutil
-import sys
-import tarfile
-import urllib
-import zipfile
-import requests
 import hashlib
+import os
+import shutil
+import tarfile
+import zipfile
+from gzip import GzipFile
 from pathlib import Path
+
+import requests
 from clint.textui import progress
 
 # the copyright message
@@ -54,13 +60,15 @@ def typeof(variate) -> str:
     return var_type
 
 
-def extract(filename: str, target_dir: str) -> None:
+def extract(filename: str, target_dir: str) -> str:
     """
     解压缩文件。
 
+    支持 ".zip" ".gz" ".tar" ".rar" ".tar.gz" 文件。
+
     :param filename: 被解压的文件名
-    :param target_dir: 解压到
-    :return:
+    :param target_dir: 解压到哪 (一个路径)
+    :return: 若 filename 参数指定的文件的格式不被支持，返回'UNKNOWN_FORMAT'，若操作完成，返回'OK'。
     """
     if file_or_dir_exists(target_dir) == 'NOT_FOUND':
         os.mkdir(target_dir)
@@ -71,7 +79,7 @@ def extract(filename: str, target_dir: str) -> None:
         zip_file.close()
     elif filename.endswith('.gz'):
         f_name = filename.replace(".gz", "")
-        g_file = gzip.GzipFile(filename)
+        g_file = GzipFile(filename)
         open(f_name, "w+").write(g_file.read())
         g_file.close()
     elif filename.endswith('.tar'):
@@ -96,12 +104,12 @@ def extract(filename: str, target_dir: str) -> None:
         tar.close()
     else:
         return 'UNKNOWN_FORMAT'
-    return target_dir
+    return 'OK'
 
 
 def get_file(url: str, save_path: str = '.', timeout: int = 10) -> str:
     """
-    从互联网下载文件。
+    从互联网下载文件，并附带一个进度条。
 
     :param url: 被下载文件的URL
     :param save_path: 保存路径，默认为当前路径
@@ -148,8 +156,8 @@ def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -
     在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
 
     :param folder: 从哪里查找，默认值为当前目录。
-
     :param file_type: 一个扩展名，不需要带有 “.” 。例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
+    :return: 被筛选的文件名的列表
     """
     folder = os.path.abspath(folder)
     if not file_type[0] == '.':
@@ -183,11 +191,11 @@ def copy_file(src: str or list, dst: str) -> str:
             elif ftmp.is_dir():
                 shutil.copytree(tmp, dst)
     elif src_type == 'str':
-        ftmp = Path(tmp)
+        ftmp = Path(src)
         if ftmp.is_file():
-            shutil.copyfile(tmp, dst)
+            shutil.copyfile(src, dst)
         elif ftmp.is_dir():
-            shutil.copytree(tmp, dst)
+            shutil.copytree(src, dst)
         else:
             return 'SRC_NOT_FOUND'
 
@@ -218,7 +226,7 @@ def is_it_broken(path: str or list) -> bool or list:
 
 
 @contextlib.contextmanager
-def pushd(new_dir: str):
+def pushd(new_dir: str) -> None:
     """
     临时切换到一个目录，操作完成后自动返回调用前路径。
 
@@ -234,25 +242,41 @@ def pushd(new_dir: str):
         os.chdir(previous_dir)
 
 
-def compress_to_zip_file(input_path: str, output_name: str, output_path: str = '.') -> None:
+def compress(input_path: str, output_name: str, output_path: str = '.') -> str:
     """
-    压缩一个目录下的所有文件到一个zip文件，无返回值。
+    压缩一个目录下的所有文件到一个文件。
+
     :param input_path: 压缩的文件夹路径
-    :param output_name: 压缩包名称
-    :param output_path: 解压（输出）的路径
-    :return:
+    :param output_name: 带有扩展名的压缩包名称 (压缩包类型有效值: 'zip', 'tar', 'tar.gz')
+    :param output_path: 输出的路径
+    :return: 压缩包文件的完整路径
     """
-    f = zipfile.ZipFile(output_path + '/' + output_name,
-                        'w', zipfile.ZIP_DEFLATED)
+    fname = os.path.abspath(os.path.join(output_path, output_name + '.' + ext))
+    if output_name.endswith('tar'):
+        f = tarfile.open(fname, "w:")
+    elif output_name.endswith('.tar.gz'):
+        f = tarfile.open(fname, "w:gz")
+    elif output_name.endswith('.gz'):
+        f = GzipFile(filename=fname)
+    else:
+        f = zipfile.ZipFile(fname,
+                            'w', zipfile.ZIP_DEFLATED)
     filelists = []
     for root, dirs, files in os.walk(input_path, topdown=True):
         for name in files:
             filelists.append(os.path.join(root, name))
         for name in dirs:
             filelists.append(os.path.join(root, name))
-    for fi in filelists:
-        f.write(fi)
-    f.close()
+    try:
+        if not output_name.endswith('.tar'):
+            for fi in filelists:
+                f.write(fi)
+        else:
+            for fi in filelists:
+                f.add(fi)
+    finally:
+        f.close()
+    return fname
 
 
 def get_sha1(path: str) -> str:
@@ -260,12 +284,13 @@ def get_sha1(path: str) -> str:
     获取一个文件的SHA1校验值，返回值是一个字符串。
 
     :param path: 目标文件名
+    :return: SHA1字符串，若文件无法打开返回'FILE_INVAILD'
     """
     sha1_obj = hashlib.sha1()
     try:
-        a = open(fr'{path}', 'rb')
+        a = open(path, 'rb')
     except:
-        return 'FINVAILD'
+        return 'FILE_INVAILD'
     while True:
         b = a.read(128000)
         sha1_obj.update(b)
@@ -280,12 +305,13 @@ def get_md5(path: str) -> str:
     获取一个文件的MD5校验值，返回值是一个字符串。
 
     :param path: 目标文件名
+    :return: SHA1字符串，若文件无法打开返回'FILE_INVAILD'
     """
     md5_obj = hashlib.md5()
     try:
         a = open(path, 'rb')
     except:
-        return 'FINVAILD'
+        return 'FILE_INVAILD'
     while True:
         b = a.read(128000)
         md5_obj.update(b)

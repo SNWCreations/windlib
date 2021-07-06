@@ -1,4 +1,4 @@
 dist/
 windlib.egg-info/
-pypi_publish.cmd
+p.cmd
 build/
