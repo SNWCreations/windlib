@@ -8,21 +8,20 @@ with open("README.md", "r", encoding='utf-8') as fh:
 
 setup(
     name="windlib",
-    version="1.7.10",
+    version="1.8.0",
     author="SNWCreations",
     author_email="snwcreations@qq.com",
     description="A useful functions library for everyone.",
     long_description=long_description,
     long_description_content_type="text/markdown",
     url="https://gitee.com/SNWCreations/windlib",
-    packages=['windlib'],
+    py_modules=['windlib'],
     project_urls={
         "Bug Tracker": "https://gitee.com/SNWCreations/windlib/issues",
     },
     requires=[
-        'contextlib',
-        'gzip',
-        'tarfile',
+        'clint',
+        'prettytable',
     ],
     python_requires=">=3.6",
     classifiers=[

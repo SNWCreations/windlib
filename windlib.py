@@ -70,7 +70,7 @@ def extract(filename: str, target_dir: str) -> str:
     :param target_dir: 解压到哪 (一个路径)
     :return: 若 filename 参数指定的文件的格式不被支持，返回'UNKNOWN_FORMAT'，若操作完成，返回'OK'。
     """
-    if file_or_dir_exists(target_dir) == 'NOT_FOUND':
+    if not os.path.exists(target_dir):
         os.mkdir(target_dir)
     if filename.endswith('.zip'):
         zip_file = zipfile.ZipFile(filename)
@@ -131,26 +131,6 @@ def get_file(url: str, save_path: str = '.', timeout: int = 10) -> str:
     return os.path.abspath(filename)
 
 
-def file_or_dir_exists(target: str) -> str:
-    """
-    检查指定的文件(或文件夹)是否存在。
-
-    :param target: 目标路径
-
-    :return: 当目标是目录时，会返回'IS_DIR'，当目标是文件时，会返回'IS_FILE'，当函数找不到目标时，会返回'NOT_FOUND'，当目标不是有效路径是，会返回'TARGET_INVAILD'。
-    """
-    try:
-        f = Path(target)
-    except:
-        return 'TARGET_INVAILD'
-    if f.is_file():
-        return 'IS_FILE'
-    elif f.is_dir():
-        return 'IS_DIR'
-    else:
-        return 'NOT_FOUND'
-
-
 def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -> list:
     """
     在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
@@ -161,16 +141,17 @@ def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -
     """
     folder = os.path.abspath(folder)
     if not file_type[0] == '.':
-        f_type = '.' + file_type
-    items = os.listdir(folder)
-    file_list = []
-    for names in items:
-        if names.endswith(f_type):
-            file_list.append(names)
+        file_type = '.' + file_type
+    with pushd(folder):
+        items = os.listdir('.')
+        file_list = []
+        for names in items:
+            if names.endswith(file_type):
+                file_list.append(os.path.abspath(names))
     return file_list
 
 
-def copy_file(src: str or list, dst: str) -> str:
+def copy_file(src: str or list or tuple, dst: str) -> None:
     """
     复制文件（或文件夹）到指定的目录。
 
@@ -178,12 +159,12 @@ def copy_file(src: str or list, dst: str) -> str:
 
     :param src: 源文件或目录
     :param dst: 目标路径
-    :return: 默认无返回值，若源文件或目录没有找到，会返回'SRC_NOT_FOUND'。
+    :return:
     """
     src_type = typeof(src)
     if not os.path.exists(dst):
         os.makedirs(dst, exist_ok=True)
-    if src_type == 'list':
+    if src_type in ('tuple', 'list'):
         for tmp in src:
             ftmp = Path(tmp)
             if ftmp.is_file():
@@ -196,11 +177,9 @@ def copy_file(src: str or list, dst: str) -> str:
             shutil.copyfile(src, dst)
         elif ftmp.is_dir():
             shutil.copytree(src, dst)
-        else:
-            return 'SRC_NOT_FOUND'
 
 
-def is_it_broken(path: str or list) -> bool or list:
+def is_it_broken(path: str or list or tuple) -> bool or list:
     """
     检查一个文件（或目录）是否损坏。
 
@@ -211,10 +190,10 @@ def is_it_broken(path: str or list) -> bool or list:
     :param path: 将要检查的路径
     :return: 布尔值或列表
     """
-    if typeof(path) == 'list':
+    if typeof(path) in ('tuple', 'list'):
         broken_files = []
         for tmp in path:
-            if os.path.lexists(tmp) and not os.path.exists(path):
+            if os.path.lexists(tmp) and not os.path.exists(tmp):
                 broken_files.append(tmp)
         return broken_files
     elif typeof(path) == 'str':
@@ -232,6 +211,11 @@ def pushd(new_dir: str) -> None:
 
     此函数为生成器，请配合 with 语句使用。
 
+    例如:
+
+    with pushd(directory):
+        ...
+
     :param new_dir: 将要切换的路径
     """
     previous_dir = os.getcwd()
@@ -247,7 +231,7 @@ def compress(input_path: str, output_name: str, output_path: str = '.') -> str:
     压缩一个目录下的所有文件到一个文件。
 
     :param input_path: 压缩的文件夹路径
-    :param output_name: 带有扩展名的压缩包名称 (压缩包类型有效值: 'zip', 'tar', 'tar.gz')
+    :param output_name: 带有扩展名的压缩包名称 (压缩包类型有效值: 'zip', 'tar', 'tar.gz') (例如: aaa.zip)
     :param output_path: 输出的路径
     :return: 压缩包文件的完整路径
     """

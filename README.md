@@ -28,7 +28,7 @@ extract(filename: str, target_dir: str) -> str
 
 如果需要支持rar文件，则需要 "rarfile" 库。
 
-您可以从 https://sourceforge.net/projects/rarfile.berlios/files/latest/download 下载 rarfile 库。
+您可以从 <https://sourceforge.net/projects/rarfile.berlios/files/latest/download> 下载 rarfile 库。
 
 示例:
 
@@ -38,7 +38,7 @@ extract(filename: str, target_dir: str) -> str
 
 ---
 
-### **get_file-从Internet下载文件。**
+### **get_file**
 
 get_file(url: str, save_path: str) -> str
 
@@ -51,28 +51,6 @@ get_file(url: str, save_path: str) -> str
     timeout: 超时时长，单位为秒，默认为 10
 
 返回: 下载后的文件名，下载失败返回'DOWNLOAD_FAILED'
-
----
-
-### **file_or_dir_exists**
-
-file_or_dir_exists(target: str) -> str
-
-检查指定的文件(或文件夹)是否存在。
-
-参数:
-
-    target: 目标路径
-
-返回:
-
-    当目标是目录时，会返回'IS_DIR'。
-
-    当目标是文件时，会返回'IS_FILE'。
-
-    当函数找不到目标时，会返回'NOT_FOUND'。
-
-    当目标不是有效路径是，会返回'TARGET_INVAILD'。
 
 ---
 
@@ -93,7 +71,7 @@ find_files_with_the_specified_extension(file_type: str, folder: str, slient: boo
 
 ### **copy_file**
 
-copy_file(src: str or list, dst: str) -> str
+copy_file(src: str or list or tuple, dst: str) -> None
 
 复制文件（或文件夹）到指定的目录。
 
@@ -103,8 +81,6 @@ copy_file(src: str or list, dst: str) -> str
 
     src: 源文件或目录
     dst: 目标路径
-
-返回: 默认无返回值，若源文件或目录没有找到，会返回'SRC_NOT_FOUND'。
 
 ---
 
@@ -216,4 +192,3 @@ get_sha1(path: str) -> str
 版权所有 (C) 2021 SNWCreations。
 
 欢迎对此库做出 Commit 和 Pull Request!
-

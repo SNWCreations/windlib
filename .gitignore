@@ -2,3 +2,4 @@ dist/
 windlib.egg-info/
 p.cmd
 build/
+__pycache__
