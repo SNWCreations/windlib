@@ -3,3 +3,7 @@ windlib.egg-info/
 p.cmd
 build/
 __pycache__
+windlib.pyi
+debug_env
+debug
+.vscode

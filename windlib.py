@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 #
 #
-#   Windlib (Useful Functions Library)
+#   windlib (Useful Functions Library)
 #
 #
 #   Copyright (C) 2021 SNWCreations. All rights reserved.
@@ -25,17 +25,16 @@ import shutil
 import tarfile
 import zipfile
 from gzip import GzipFile
-from pathlib import Path
+from typing import List, Tuple, Any, Union
 
 import requests
-from clint.textui import progress
 
 # the copyright message
 print('windlib by SNWCreations')
 print('Copyright (C) 2021 SNWCreations. All rights reserved.')
 
 
-def typeof(variate) -> str:
+def typeof(variate: Any) -> str:
     """
     检测一个变量的类型，返回值是一个字符串。
 
@@ -60,7 +59,7 @@ def typeof(variate) -> str:
     return var_type
 
 
-def extract(filename: str, target_dir: str) -> str:
+def extract(filename: str, target_dir: str) -> None:
     """
     解压缩文件。
 
@@ -68,7 +67,7 @@ def extract(filename: str, target_dir: str) -> str:
 
     :param filename: 被解压的文件名
     :param target_dir: 解压到哪 (一个路径)
-    :return: 若 filename 参数指定的文件的格式不被支持，返回'UNKNOWN_FORMAT'，若操作完成，返回'OK'。
+    :return: 无
     """
     if not os.path.exists(target_dir):
         os.mkdir(target_dir)
@@ -89,10 +88,7 @@ def extract(filename: str, target_dir: str) -> str:
             tar.extract(name, target_dir)
         tar.close()
     elif filename.endswith('.rar'):
-        try:
-            import rarfile
-        except:
-            return
+        import rarfile
         rar = rarfile.RarFile(filename)
         with pushd(target_dir):
             rar.extractall()
@@ -103,32 +99,36 @@ def extract(filename: str, target_dir: str) -> str:
             tar.extractall()
         tar.close()
     else:
-        return 'UNKNOWN_FORMAT'
-    return 'OK'
+        raise ValueError('未知的文件格式')
 
 
-def get_file(url: str, save_path: str = '.', timeout: int = 10) -> str:
+def get_file(url: str, save_as_name: str = None, save_path: str = '.', timeout: int = 10, headers=None) -> str:
     """
-    从互联网下载文件，并附带一个进度条。
+    从互联网下载文件。
 
     :param url: 被下载文件的URL
+    :param save_as_name: 文件在本地上将要使用的名称, 默认为 URL 指向的文件的名称
     :param save_path: 保存路径，默认为当前路径
     :param timeout: 超时时长，单位为秒，默认为 10
-    :return: 下载后的文件名，下载失败返回'DOWNLOAD_FAILED'
-    """
-    save_path = os.path.abspath(save_path)
-    try:
-        res = requests.get(url, stream=True, headers={
-                           'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/86.0.4240.198 Safari/537.36'}, timeout=timeout)
-    except:
-        return 'DOWNLOAD_FAILED'
-    total_length = int(res.headers.get('content-length'))
-    filename = save_path + '/' + os.path.basename(url)
-    with open(filename, "wb") as pypkg:
-        for chunk in progress.bar(res.iter_content(chunk_size=1024), expected_size=(total_length/1024) + 1, width=50):
-            if chunk:
-                pypkg.write(chunk)
-    return os.path.abspath(filename)
+    :param headers: 请求头，默认为一个 Windows Chrome 的 UA
+
+    :return: 下载后的文件名。
+"""
+    if not headers:
+        headers = {
+            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) '
+                          'Chrome/72.0.3626.121 Safari/537.36 '
+        }
+    if not save_as_name:
+        save_as_name = os.path.basename(url)
+    filename = os.path.abspath(os.path.join(save_path, save_as_name))
+    # 请求下载地址，以流式的。打开要下载的文件位置。
+    with requests.get(url, stream=True, timeout=timeout, headers=headers) as r, open(filename, 'wb') as file:
+        # 开始下载每次请求1024字节
+        for content in r.iter_content(chunk_size=1024):
+            # 写入数据块
+            file.write(content)
+    return filename
 
 
 def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -> list:
@@ -136,7 +136,7 @@ def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -
     在目标文件夹中找到具有指定扩展名的文件，返回值是一个列表。
 
     :param folder: 从哪里查找，默认值为当前目录。
-    :param file_type: 一个扩展名，不需要带有 “.” 。例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
+    :param file_type: 一个扩展名。例如 "txt", "jar", "md", "class" 或 ".txt" ".jar" ".md" ".class".
     :return: 被筛选的文件名的列表
     """
     folder = os.path.abspath(folder)
@@ -151,7 +151,7 @@ def find_files_with_the_specified_extension(file_type: str, folder: str = '.') -
     return file_list
 
 
-def copy_file(src: str or list or tuple, dst: str) -> None:
+def copy_file(src: Union[str, List[str], Tuple[str]], dst: str) -> None:
     """
     复制文件（或文件夹）到指定的目录。
 
@@ -166,20 +166,18 @@ def copy_file(src: str or list or tuple, dst: str) -> None:
         os.makedirs(dst, exist_ok=True)
     if src_type in ('tuple', 'list'):
         for tmp in src:
-            ftmp = Path(tmp)
-            if ftmp.is_file():
+            if os.path.isfile(tmp):
                 shutil.copyfile(tmp, dst)
-            elif ftmp.is_dir():
+            elif os.path.isdir(tmp):
                 shutil.copytree(tmp, dst)
     elif src_type == 'str':
-        ftmp = Path(src)
-        if ftmp.is_file():
+        if os.path.isfile(src):
             shutil.copyfile(src, dst)
-        elif ftmp.is_dir():
+        elif os.path.isdir(src):
             shutil.copytree(src, dst)
 
 
-def is_it_broken(path: str or list or tuple) -> bool or list:
+def is_it_broken(path: Union[str, Tuple[str], List[str]]) -> bool or list:
     """
     检查一个文件（或目录）是否损坏。
 
@@ -197,7 +195,7 @@ def is_it_broken(path: str or list or tuple) -> bool or list:
                 broken_files.append(tmp)
         return broken_files
     elif typeof(path) == 'str':
-        if os.path.lexists(path) == True:
+        if os.path.lexists(path):
             if os.path.exists(path):
                 return True
             return False
@@ -205,7 +203,7 @@ def is_it_broken(path: str or list or tuple) -> bool or list:
 
 
 @contextlib.contextmanager
-def pushd(new_dir: str) -> None:
+def pushd(new_dir: str):
     """
     临时切换到一个目录，操作完成后自动返回调用前路径。
 
@@ -235,32 +233,31 @@ def compress(input_path: str, output_name: str, output_path: str = '.') -> str:
     :param output_path: 输出的路径
     :return: 压缩包文件的完整路径
     """
-    fname = os.path.abspath(os.path.join(output_path, output_name))
-    if output_name.endswith('tar'):
-        f = tarfile.open(fname, "w:")
+    filename = os.path.abspath(os.path.join(output_path, output_name))
+    if output_name.endswith('.tar'):
+        f = tarfile.open(filename, "w:")
     elif output_name.endswith('.tar.gz'):
-        f = tarfile.open(fname, "w:gz")
+        f = tarfile.open(filename, "w:gz")
     elif output_name.endswith('.gz'):
-        f = GzipFile(filename=fname)
+        f = GzipFile(filename=filename)
     else:
-        f = zipfile.ZipFile(fname,
+        f = zipfile.ZipFile(filename,
                             'w', zipfile.ZIP_DEFLATED)
-    filelists = []
-    for root, dirs, files in os.walk(input_path, topdown=True):
-        for name in files:
-            filelists.append(os.path.join(root, name))
-        for name in dirs:
-            filelists.append(os.path.join(root, name))
-    try:
-        if not output_name.endswith('.tar'):
-            for fi in filelists:
-                f.write(fi)
-        else:
-            for fi in filelists:
-                f.add(fi)
-    finally:
-        f.close()
-    return fname
+    file_list = []
+    with pushd(input_path):
+        for root, dirs, files in os.walk('.', topdown=True):
+            for name in files:
+                file_list.append(os.path.join(root, name))
+        try:
+            if not output_name.endswith('.tar'):
+                for fi in file_list:
+                    f.write(fi)
+            else:
+                for fi in file_list:
+                    f.add(fi)
+        finally:
+            f.close()
+    return filename
 
 
 def get_sha1(path: str) -> str:
@@ -268,13 +265,10 @@ def get_sha1(path: str) -> str:
     获取一个文件的SHA1校验值，返回值是一个字符串。
 
     :param path: 目标文件名
-    :return: SHA1字符串，若文件无法打开返回'FILE_INVAILD'
+    :return: SHA1字符串
     """
     sha1_obj = hashlib.sha1()
-    try:
-        a = open(path, 'rb')
-    except:
-        return 'FILE_INVAILD'
+    a = open(path, 'rb')
     while True:
         b = a.read(128000)
         sha1_obj.update(b)
@@ -289,13 +283,10 @@ def get_md5(path: str) -> str:
     获取一个文件的MD5校验值，返回值是一个字符串。
 
     :param path: 目标文件名
-    :return: SHA1字符串，若文件无法打开返回'FILE_INVAILD'
+    :return: SHA1字符串
     """
     md5_obj = hashlib.md5()
-    try:
-        a = open(path, 'rb')
-    except:
-        return 'FILE_INVAILD'
+    a = open(path, 'rb')
     while True:
         b = a.read(128000)
         md5_obj.update(b)

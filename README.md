@@ -33,8 +33,9 @@ extract(filename: str, target_dir: str) -> str
 示例:
 
     >>> extract('a.zip', 'a')
-    'OK'
     >>>
+
+可能引发的异常: 当解压目标为 rar 但是 rarfile 库未安装时, 会引发 MoudleNotFound 异常。
 
 ---
 
@@ -50,7 +51,9 @@ get_file(url: str, save_path: str) -> str
     save_path: 保存路径，默认为当前路径
     timeout: 超时时长，单位为秒，默认为 10
 
-返回: 下载后的文件名，下载失败返回'DOWNLOAD_FAILED'
+返回: 下载后的文件名
+
+可能引发的异常: 当 请求出错 时, 会引发 requests 库的某个原生异常
 
 ---
 
@@ -71,7 +74,7 @@ find_files_with_the_specified_extension(file_type: str, folder: str, slient: boo
 
 ### **copy_file**
 
-copy_file(src: str or list or tuple, dst: str) -> None
+copy_file(src: str or Iterable, dst: str) -> None
 
 复制文件（或文件夹）到指定的目录。
 
@@ -175,6 +178,8 @@ get_sha1(path: str) -> str
 ---
 
 ### **get_md5**
+
+get_md5(path: str) -> str
 
 获取一个文件的MD5校验值，返回值是一个字符串。
 

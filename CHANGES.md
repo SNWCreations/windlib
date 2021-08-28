@@ -1,12 +1,24 @@
 # **Windlib 更新日志**
 
+## **v1.9.0**
+
+修复 "compress" 函数中的一个细节错误。
+
+**!重要更改!** 现在, 当解压目标为 rar 但是 rarfile 库未安装时, "extract" 函数会引发 ModuleNotFound 异常。
+
+**!重要更改!** 现在, 当 "get_file" 函数在 下载请求出错 时, 会引发 requests 库的某个原生异常。
+
+**!重要更改!** 现在, 当传入 "get_md5" 或 "get_sha1" 的参数 "path" 不是有效文件时, 会引发和文件有关的异常。
+
+调整 setup.py，修复了依赖库不能安装的问题，增加许可证类型。
+
 ## **v1.8.0**
 
 全新的包结构。
 
 给 "find_files_with_the_specified_extension" 函数作细节修复，现在此函数返回的列表中所包含的文件路径会是绝对路径。
 
-移除 "file_or_dir_exists" 函数。
+**!破坏性更改!** 移除 "file_or_dir_exists" 函数。
 
 修复 README.md 中的 Markdown 语法错误。
 
@@ -26,7 +38,7 @@
 
 对一些函数进行细节修复。
 
-小型重构 "compress_to_zip_file" 函数，并将其重命名为 "compress" ，增加对 'tar' 'tar.gz' 格式文件的支持。
+**!破坏性更改!** 小型重构 "compress_to_zip_file" 函数，并将其重命名为 "compress" ，增加对 'tar' 'tar.gz' 格式文件的支持。
 
 ## **v1.7.8**
 
